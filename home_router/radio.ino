@@ -9,6 +9,8 @@ const uint64_t router_pipe = 0xF0F0F0F0E1LL;
 const uint64_t point_pipes[1] = { 0xF0F0F0F0D2LL };
 
 void setupRadio() {
+  radio_num.restore();
+  
   isRouter = radioRole() == radio_role_router;
 
   radio.begin();
@@ -43,4 +45,16 @@ bool sendIntToPoint(int addr, int val) {
   radio.startListening();
 
   return ok;
+}
+
+bool sendStrToPoint(int addr, char val[]) {
+  radio.stopListening();
+  radio.openWritingPipe(point_pipes[addr - 1]);
+  
+  Log.Info("Send to %d point value = %s"CR, addr, val);
+
+  bool ok = radio.write( &val, sizeof(val) );
+  radio.startListening();
+
+  return ok;  
 }

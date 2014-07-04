@@ -3,7 +3,8 @@ enum {
   cmdHelp,
   cmdStatus,
   cmdSetLed,
-  cmdSetRemoteLed
+  cmdSetRemoteLed,
+  cmdSetRadioNum
 };
 
 void OnSetLedCmd() {
@@ -24,7 +25,20 @@ void OnStatusCmd() {
 }
 
 void OnHelpCmd() {
-  Log.Info("%d; - help\n\r%d; - status\n\r%d,<val>; - set led\n\r%d,<addr>,<val> - set romote led"CR, cmdHelp, cmdStatus, cmdSetLed, cmdSetRemoteLed);
+  Log.Info(CR);
+  Log.Info("%d; - help"CR, cmdHelp);
+  Log.Info("%d; - status"CR, cmdStatus);
+  Log.Info("%d,<val>; - set led."CR, cmdSetLed);
+  Log.Info("%d,<addr>,<val>; - set romote led"CR, cmdSetRemoteLed);
+  Log.Info("%d,<val>; - Set radio number."CR, cmdSetRadioNum);
+  Log.Info(CR);
+}
+
+void OnSetRadioNumCmd() {
+  int val = cmdMessenger.readInt32Arg();
+  radio_num = val;
+  radio_num.save();
+  Log.Info("Set radio_num to %d."CR, int(radio_num));
 }
 
 void setupCmd() {
@@ -35,13 +49,16 @@ void setupCmd() {
   cmdMessenger.attach(cmdStatus, OnStatusCmd);
   cmdMessenger.attach(cmdSetRemoteLed, OnSetRemoteLedCmd);
   cmdMessenger.attach(cmdHelp, OnHelpCmd);
+  cmdMessenger.attach(cmdSetRadioNum, OnSetRadioNumCmd);
 }
 
 void OnSetRemoteLedCmd() {
   int addr = cmdMessenger.readInt16Arg();
   int ledVal = cmdMessenger.readInt16Arg();
+  
+  char message[] = {"0;"CR};
 
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < 1; i++) {
     bool ok = sendIntToPoint(addr, ledVal);
     Log.Info("%d Sending result: %s"CR, i , ok ? "ok" : "fail");
     delay(3000);

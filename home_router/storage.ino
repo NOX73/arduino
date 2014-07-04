@@ -6,6 +6,20 @@ void setupStorage() {
   EEPROM.setMemPool(MEM_VABASE, EEPROMSizeUno);
   EEPROM.setMaxAllowedWrites(MAX_ALLOWED_WRITES);
 
-  led_val.restore();
-  radio_num.restore();
+  eeprom_init.restore();
+
+  if (!eeprom_init) {
+    Log.Info("Init eeprom with default values."CR);
+    
+    led_val = HIGH;
+    led_val.save();
+
+    radio_num = RADIO_NUM;
+    radio_num.save();
+
+    eeprom_init = true;
+    eeprom_init.save();
+  }
+
+
 }
