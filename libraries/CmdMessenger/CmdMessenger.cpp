@@ -132,7 +132,7 @@ void CmdMessenger::feedinSerialData()
 
 		size_t bytesAvailable = min(comms->available(),MAXSTREAMBUFFERSIZE);
 		comms->readBytes(streamBuffer, bytesAvailable); 
-		
+
 		// Process the bytes in the stream buffer, and handles dispatches callbacks, if commands are received
 		for (size_t byteNo = 0; byteNo < bytesAvailable ; byteNo++) 
 		{   

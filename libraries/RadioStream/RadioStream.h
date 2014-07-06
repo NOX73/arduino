@@ -4,16 +4,22 @@
 #include "Stream.h"
 #include "RF24.h"
 
-class RadioStream : public Stream 
+#define PAYLOAD_SIZE 8
+
+class RadioStream : public Stream
 {
   private:
     RF24 *target;
+    char buffer[PAYLOAD_SIZE];
+    int buffer_pointer;
 
-    void init(RF24 &radio);
+    void init(RF24 *radio);
+    void readFromRadio();
+    int recievedBuffer();
 
   public: 
 
-    RadioStream(RF24 &radio);
+    RadioStream(RF24 *radio);
 
     size_t write(uint8_t val);
     int read();

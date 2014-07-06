@@ -10,7 +10,7 @@ const uint64_t point_pipes[1] = { 0xF0F0F0F0D2LL };
 
 void setupRadio() {
   radio_num.restore();
-  
+
   isRouter = radioRole() == radio_role_router;
 
   radio.begin();
@@ -27,6 +27,16 @@ void setupRadio() {
     radio.openReadingPipe(1, point_pipes[radio_num - 1]);
   }
 
+
+  radio.startListening();
+}
+
+void beginSend(int addr) {
+  radio.stopListening();
+  radio.openWritingPipe(point_pipes[addr - 1]);
+}
+
+void endSend() {
   radio.startListening();
 }
 
@@ -35,26 +45,34 @@ int radioRole() {
 }
 
 bool sendIntToPoint(int addr, int val) {
-  radio.stopListening();
-
-  radio.openWritingPipe(point_pipes[addr - 1]);
-
-  Log.Info("Send to %d point value = %d"CR, addr, val);
+  beginSend(addr);
+  
+  Log.Info("Send to %d point int value = %d"CR, addr, val);
 
   bool ok = radio.write( &val, sizeof(int) );
-  radio.startListening();
-
+  
+  endSend();
   return ok;
 }
 
-bool sendStrToPoint(int addr, char val[]) {
-  radio.stopListening();
-  radio.openWritingPipe(point_pipes[addr - 1]);
+bool sendCharToPoint(int addr, char val) {
+  beginSend(addr);
   
-  Log.Info("Send to %d point value = %s"CR, addr, val);
-
+  Log.Info("Send to %d point char value = %c with size %d"CR, addr, val, sizeof(val));
+  
   bool ok = radio.write( &val, sizeof(val) );
-  radio.startListening();
+  
+  endSend();
+  return ok;
+}
 
-  return ok;  
+bool sendStrToPoint(int addr, char val[], int sizeofval) {
+  beginSend(addr);
+  
+  Log.Info("Send to %d point string value = %s with size %d."CR, addr, val, sizeofval);
+
+  bool ok = radio.write( val, sizeofval );
+  
+  endSend();
+  return ok;
 }

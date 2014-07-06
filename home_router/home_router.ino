@@ -27,7 +27,7 @@ EEPROMVar<int> radio_num(RADIO_NUM);
 RF24 radio(CE_PIN, CSN_PIN);
 
 CmdMessenger cmdMessenger = CmdMessenger(Serial);
-RadioStream radioStream = RadioStream(radio);
+RadioStream radioStream = RadioStream(&radio);
 CmdMessenger cmdRadioMessenger = CmdMessenger(radioStream);
 
 bool isRouter = false;

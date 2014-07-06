@@ -1,38 +1,56 @@
 #include <RadioStream.h>
+#include <RF24.h>
 
-RadioStream::RadioStream(RF24 &radio)
-{
+RadioStream::RadioStream(RF24 *radio) {
   init(radio);
 }
 
-void RadioStream::flush()
-{
+void RadioStream::init(RF24 *radio) {
+  target = radio;
+  buffer_pointer = sizeof(buffer);
 }
 
-int RadioStream::peek()
-{
-  return 0;
+int RadioStream::available() {
+
+  if(buffer_pointer >= recievedBuffer()){
+    int a = target->available();
+    if(a){
+      readFromRadio();
+      return recievedBuffer();
+    }else{
+      return a;
+    }
+  } else {
+    return recievedBuffer() - buffer_pointer;
+  }
+
 }
 
-size_t RadioStream::write(uint8_t val){
-  return 0;
+int RadioStream::recievedBuffer() {
+  int i=0;
+  while(buffer[i] != 0) i++;
+
+  return i;
 }
 
-void RadioStream::init(RF24 &radio)
-{
-  target = &radio;
+void RadioStream::readFromRadio() {
+    bool ok = target->read(buffer, sizeof(buffer));
+    buffer_pointer = 0;
 }
 
-int RadioStream::available()
-{
-  return target->available();
+int RadioStream::read() {
+  if(buffer_pointer >= recievedBuffer()){
+    readFromRadio();
+  }
+
+  int res = buffer[buffer_pointer];
+
+  buffer_pointer++;
+
+  return res;
 }
 
-int RadioStream::read()
-{
-  int buff;
-  bool ok = target->read(&buff, sizeof(buff));
-  return buff;
-}
-
+void RadioStream::flush() { }
+int RadioStream::peek() { return 0; }
+size_t RadioStream::write(uint8_t val){ return 0; } 
 

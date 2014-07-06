@@ -43,6 +43,7 @@ void OnSetRadioNumCmd() {
 
 void setupCmd() {
   cmdMessenger.printLfCr();
+  cmdRadioMessenger.printLfCr();
 
   cmdMessenger.attach(OnUnknownCmd);
   cmdMessenger.attach(cmdSetLed, OnSetLedCmd);
@@ -50,6 +51,9 @@ void setupCmd() {
   cmdMessenger.attach(cmdSetRemoteLed, OnSetRemoteLedCmd);
   cmdMessenger.attach(cmdHelp, OnHelpCmd);
   cmdMessenger.attach(cmdSetRadioNum, OnSetRadioNumCmd);
+  
+  cmdRadioMessenger.attach(OnUnknownCmd);  
+  cmdRadioMessenger.attach(cmdHelp, OnHelpCmd); 
 }
 
 void OnSetRemoteLedCmd() {
