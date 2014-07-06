@@ -8,7 +8,7 @@ enum {
 };
 
 void OnSetLedCmd() {
-  bool ledOn = cmdMessenger.readBoolArg();
+  bool ledOn = cmdSource->readBoolArg();
 
   ledOn ? ledTurnOn() : ledTurnOff();
 
@@ -16,7 +16,7 @@ void OnSetLedCmd() {
 }
 
 void OnUnknownCmd() {
-  Log.Info("Unknown command."CR);
+  Log.Info("Unknown command %d."CR, cmdSource->CommandID());
 }
 
 void OnStatusCmd() {
@@ -35,7 +35,7 @@ void OnHelpCmd() {
 }
 
 void OnSetRadioNumCmd() {
-  int val = cmdMessenger.readInt32Arg();
+  int val = cmdSource->readInt32Arg();
   radio_num = val;
   radio_num.save();
   Log.Info("Set radio_num to %d."CR, int(radio_num));
@@ -53,20 +53,18 @@ void setupCmd() {
   cmdMessenger.attach(cmdSetRadioNum, OnSetRadioNumCmd);
   
   cmdRadioMessenger.attach(OnUnknownCmd);  
-  cmdRadioMessenger.attach(cmdHelp, OnHelpCmd); 
+  cmdRadioMessenger.attach(cmdHelp, OnHelpCmd);
+  cmdRadioMessenger.attach(cmdSetLed, OnSetLedCmd); 
 }
 
 void OnSetRemoteLedCmd() {
-  int addr = cmdMessenger.readInt16Arg();
-  int ledVal = cmdMessenger.readInt16Arg();
+  int addr = cmdSource->readInt16Arg();
+  int ledVal = cmdSource->readInt16Arg();
   
-  char message[] = {"0;"CR};
+  char val[] = {"2,0;"};
+  val[2] = ledVal ? '1' : '0';
+  sendStrToPoint(addr, val, sizeof(val));
 
-  for (int i = 0; i < 1; i++) {
-    bool ok = sendIntToPoint(addr, ledVal);
-    Log.Info("%d Sending result: %s"CR, i , ok ? "ok" : "fail");
-    delay(3000);
-  }
-
+  Log.Info("Remote Led on %d turn %s."CR, addr, ledVal ? "on" : "off");
 }
 

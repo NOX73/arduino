@@ -17,7 +17,7 @@
 #define CE_PIN   9
 #define CSN_PIN 10
 #define SERIAL_BAUD 9600
-#define LED 5
+#define LED 3
 
 // Global variables
 EEPROMVar<bool> eeprom_init(false);
@@ -29,6 +29,7 @@ RF24 radio(CE_PIN, CSN_PIN);
 CmdMessenger cmdMessenger = CmdMessenger(Serial);
 RadioStream radioStream = RadioStream(&radio);
 CmdMessenger cmdRadioMessenger = CmdMessenger(radioStream);
+CmdMessenger *cmdSource = &cmdMessenger;
 
 bool isRouter = false;
 
