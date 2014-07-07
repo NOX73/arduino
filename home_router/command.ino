@@ -80,7 +80,7 @@ void OnSetRemoteDigitalCmd() {
   bool isOn = cmdSource->readBoolArg();
 
   // TODO: get 3 from cmdSetDigital
-  char cmd[] = {'3', digital_num, ',', isOn ? '1' : '0'};
+  char cmd[] = {'3',',', digital_num, ',', isOn ? '1' : '0',';',0};
   sendStrToPoint(addr, cmd, sizeof(cmd));
 
   Log.Info("Remote digital #%c on %d turn %s."CR, digital_num, addr, isOn ? "on" : "off");
