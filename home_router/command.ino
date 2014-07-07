@@ -2,17 +2,19 @@
 enum {
   cmdHelp,
   cmdStatus,
-  cmdSetLed,
-  cmdSetRemoteLed,
+  cmdClearStorage,
+  cmdSetDigital,
+  cmdSetRemoteDigital,
   cmdSetRadioNum
 };
 
-void OnSetLedCmd() {
+void OnSetDigitalCmd() {
+  int digital_num = cmdSource->readInt16Arg();
   bool ledOn = cmdSource->readBoolArg();
 
-  ledOn ? ledTurnOn() : ledTurnOff();
+  ledOn ? digitalOn(digital_num) : digitalOff(digital_num);
 
-  Log.Info("Led turn %s."CR, ledOn ? "on" : "off");
+  Log.Info("Digital #%d turn %s."CR, digital_num, ledOn ? "on" : "off");
 }
 
 void OnUnknownCmd() {
@@ -20,7 +22,8 @@ void OnUnknownCmd() {
 }
 
 void OnStatusCmd() {
-  Log.Info("Led Status: %s."CR, led_val == HIGH ? "on" : "off");
+  Log.Info("Led Status: %s."CR,  isDigitalOn(LED) ? "on" : "off");
+  Log.Info("Relay Status: %s."CR,  isDigitalOn(RELAY) ? "on" : "off");
   Log.Info("Radio Num: %d."CR, int(radio_num));
 }
 
@@ -28,8 +31,11 @@ void OnHelpCmd() {
   Log.Info(CR);
   Log.Info("%d; - help"CR, cmdHelp);
   Log.Info("%d; - status"CR, cmdStatus);
-  Log.Info("%d,<val>; - set led."CR, cmdSetLed);
-  Log.Info("%d,<addr>,<val>; - set romote led"CR, cmdSetRemoteLed);
+  Log.Info("%d,<run setup>; - clear storage"CR, cmdClearStorage);
+  Log.Info("%d,<num>,<val>; - set digital."CR, cmdSetDigital);
+  Log.Info("\tLED - %d"CR, LED);
+  Log.Info("\tRELAY - %d"CR, RELAY);
+  Log.Info("%d,<addr>,<num>,<val>; - set romote digital"CR, cmdSetRemoteDigital);
   Log.Info("%d,<val>; - Set radio number."CR, cmdSetRadioNum);
   Log.Info(CR);
 }
@@ -41,30 +47,42 @@ void OnSetRadioNumCmd() {
   Log.Info("Set radio_num to %d."CR, int(radio_num));
 }
 
+void OnClearStorageCmd() {
+  bool runSetup = cmdSource->readBoolArg();
+
+  clearStorage();
+  Log.Info("Storage has been cleaned.");
+
+  if (runSetup) setupStorage();
+}
+
 void setupCmd() {
   cmdMessenger.printLfCr();
   cmdRadioMessenger.printLfCr();
 
   cmdMessenger.attach(OnUnknownCmd);
-  cmdMessenger.attach(cmdSetLed, OnSetLedCmd);
-  cmdMessenger.attach(cmdStatus, OnStatusCmd);
-  cmdMessenger.attach(cmdSetRemoteLed, OnSetRemoteLedCmd);
+
   cmdMessenger.attach(cmdHelp, OnHelpCmd);
+  cmdMessenger.attach(cmdStatus, OnStatusCmd);
+  cmdMessenger.attach(cmdClearStorage, OnClearStorageCmd);
+
+  cmdMessenger.attach(cmdSetDigital, OnSetDigitalCmd);
+  cmdMessenger.attach(cmdSetRemoteDigital, OnSetRemoteDigitalCmd);
   cmdMessenger.attach(cmdSetRadioNum, OnSetRadioNumCmd);
-  
-  cmdRadioMessenger.attach(OnUnknownCmd);  
-  cmdRadioMessenger.attach(cmdHelp, OnHelpCmd);
-  cmdRadioMessenger.attach(cmdSetLed, OnSetLedCmd); 
+
+  cmdRadioMessenger.attach(OnUnknownCmd);
+  cmdRadioMessenger.attach(cmdSetDigital, OnSetDigitalCmd);
 }
 
-void OnSetRemoteLedCmd() {
+void OnSetRemoteDigitalCmd() {
   int addr = cmdSource->readInt16Arg();
-  int ledVal = cmdSource->readInt16Arg();
-  
-  char val[] = {"2,0;"};
-  val[2] = ledVal ? '1' : '0';
-  sendStrToPoint(addr, val, sizeof(val));
+  char digital_num = cmdSource->readCharArg();
+  bool isOn = cmdSource->readBoolArg();
 
-  Log.Info("Remote Led on %d turn %s."CR, addr, ledVal ? "on" : "off");
+  // TODO: get 3 from cmdSetDigital
+  char cmd[] = {'3', digital_num, ',', isOn ? '1' : '0'};
+  sendStrToPoint(addr, cmd, sizeof(cmd));
+
+  Log.Info("Remote digital #%c on %d turn %s."CR, digital_num, addr, isOn ? "on" : "off");
 }
 

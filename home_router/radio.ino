@@ -8,6 +8,11 @@ enum {
 const uint64_t router_pipe = 0xF0F0F0F0E1LL;
 const uint64_t point_pipes[1] = { 0xF0F0F0F0D2LL };
 
+void radioInitDefaults() {
+  radio_num = RADIO_NUM;
+  radio_num.save();
+}
+
 void setupRadio() {
   radio_num.restore();
 
@@ -46,33 +51,33 @@ int radioRole() {
 
 bool sendIntToPoint(int addr, int val) {
   beginSend(addr);
-  
+
   Log.Info("Send to %d point int value = %d"CR, addr, val);
 
   bool ok = radio.write( &val, sizeof(int) );
-  
+
   endSend();
   return ok;
 }
 
 bool sendCharToPoint(int addr, char val) {
   beginSend(addr);
-  
+
   Log.Info("Send to %d point char value = %c with size %d"CR, addr, val, sizeof(val));
-  
+
   bool ok = radio.write( &val, sizeof(val) );
-  
+
   endSend();
   return ok;
 }
 
 bool sendStrToPoint(int addr, char val[], int sizeofval) {
   beginSend(addr);
-  
+
   Log.Info("Send to %d point string value = %s with size %d."CR, addr, val, sizeofval);
 
   bool ok = radio.write( val, sizeofval );
-  
+
   endSend();
   return ok;
 }

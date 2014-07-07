@@ -17,12 +17,17 @@
 #define CE_PIN   9
 #define CSN_PIN 10
 #define SERIAL_BAUD 9600
-#define LED 3
 
 // Global variables
 EEPROMVar<bool> eeprom_init(false);
-EEPROMVar<int> led_val(HIGH);
 EEPROMVar<int> radio_num(RADIO_NUM);
+
+// Digital
+#define LED 3
+#define RELAY 4
+// Digital number in array is (number - DIGITAL_SHIFT)
+#define DIGITAL_SHIFT 3
+EEPROMVar<int> digitals[2] = {HIGH, HIGH};
 
 RF24 radio(CE_PIN, CSN_PIN);
 
@@ -39,7 +44,7 @@ void setup() {
   setupStorage();
   setupRadio();
   setupCmd();
-  setupLed();
+  setupDigitalPins();
   
   isRouter ? setupRouter() : setupPoint();
 

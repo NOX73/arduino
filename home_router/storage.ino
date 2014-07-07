@@ -11,15 +11,16 @@ void setupStorage() {
   if (!eeprom_init) {
     Log.Info("Init eeprom with default values."CR);
     
-    led_val = HIGH;
-    led_val.save();
-
-    radio_num = RADIO_NUM;
-    radio_num.save();
+    digitalInitDefaults();
+    radioInitDefaults();
 
     eeprom_init = true;
     eeprom_init.save();
   }
 
 
+}
+
+void clearStorage() {
+  for (int i = 0; i < 1024; i++) EEPROM.write(i, 0);
 }
