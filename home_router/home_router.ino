@@ -14,9 +14,9 @@
 
 #define LOGLEVEL LOG_LEVEL_DEBUG
 #define RADIO_NUM 0
-#define CE_PIN   9
+#define CE_PIN 9
 #define CSN_PIN 10
-#define SERIAL_BAUD 9600
+#define SERIAL_BAUD 57600
 
 // Global variables
 EEPROMVar<bool> eeprom_init(false);
@@ -31,10 +31,16 @@ EEPROMVar<int> digitals[2] = {HIGH, HIGH};
 
 RF24 radio(CE_PIN, CSN_PIN);
 
-CmdMessenger cmdMessenger = CmdMessenger(Serial);
-RadioStream radioStream = RadioStream(&radio);
-CmdMessenger cmdRadioMessenger = CmdMessenger(radioStream);
-CmdMessenger *cmdSource = &cmdMessenger;
+//CmdMessenger cmdMessenger = CmdMessenger(Serial);
+//RadioStream radioStream = RadioStream(&radio);
+//CmdMessenger cmdRadioMessenger = CmdMessenger(radioStream);
+
+//CmdMessenger *cmdSource = &cmdMessenger;
+
+CmdMessenger *cmdMessenger;
+CmdMessenger *cmdRadioMessenger;
+
+CmdMessenger *cmdSource;
 
 bool isRouter = false;
 

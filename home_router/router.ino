@@ -2,5 +2,5 @@ void setupRouter() {
 }
 
 void routerLoop() {
-  cmdMessenger.feedinSerialData();
+  cmdMessenger->feedinSerialData();
 }

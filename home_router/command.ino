@@ -57,21 +57,28 @@ void OnClearStorageCmd() {
 }
 
 void setupCmd() {
-  cmdMessenger.printLfCr();
-  cmdRadioMessenger.printLfCr();
+  
+  cmdMessenger = new CmdMessenger(Serial);
+  RadioStream radioStream = RadioStream(&radio);
+  cmdRadioMessenger = new CmdMessenger(radioStream);
+  
+  cmdSource = cmdMessenger;
+  
+  cmdMessenger->printLfCr();
+  cmdRadioMessenger->printLfCr();
 
-  cmdMessenger.attach(OnUnknownCmd);
+  cmdMessenger->attach(OnUnknownCmd);
 
-  cmdMessenger.attach(cmdHelp, OnHelpCmd);
-  cmdMessenger.attach(cmdStatus, OnStatusCmd);
-  cmdMessenger.attach(cmdClearStorage, OnClearStorageCmd);
+  cmdMessenger->attach(cmdHelp, OnHelpCmd);
+  cmdMessenger->attach(cmdStatus, OnStatusCmd);
+  cmdMessenger->attach(cmdClearStorage, OnClearStorageCmd);
 
-  cmdMessenger.attach(cmdSetDigital, OnSetDigitalCmd);
-  cmdMessenger.attach(cmdSetRemoteDigital, OnSetRemoteDigitalCmd);
-  cmdMessenger.attach(cmdSetRadioNum, OnSetRadioNumCmd);
+  cmdMessenger->attach(cmdSetDigital, OnSetDigitalCmd);
+  cmdMessenger->attach(cmdSetRemoteDigital, OnSetRemoteDigitalCmd);
+  cmdMessenger->attach(cmdSetRadioNum, OnSetRadioNumCmd);
 
-  cmdRadioMessenger.attach(OnUnknownCmd);
-  cmdRadioMessenger.attach(cmdSetDigital, OnSetDigitalCmd);
+  cmdRadioMessenger->attach(OnUnknownCmd);
+  cmdRadioMessenger->attach(cmdSetDigital, OnSetDigitalCmd);
 }
 
 void OnSetRemoteDigitalCmd() {
