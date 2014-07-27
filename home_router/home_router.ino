@@ -39,6 +39,7 @@ RF24 radio(CE_PIN, CSN_PIN);
 
 CmdMessenger *cmdMessenger;
 CmdMessenger *cmdRadioMessenger;
+RadioStream *radioStream;
 
 CmdMessenger *cmdSource;
 

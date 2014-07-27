@@ -59,8 +59,8 @@ void OnClearStorageCmd() {
 void setupCmd() {
   
   cmdMessenger = new CmdMessenger(Serial);
-  RadioStream radioStream = RadioStream(&radio);
-  cmdRadioMessenger = new CmdMessenger(radioStream);
+  radioStream = new RadioStream(&radio);
+  cmdRadioMessenger = new CmdMessenger(*radioStream);
   
   cmdSource = cmdMessenger;
   
