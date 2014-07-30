@@ -1,0 +1,6 @@
+[submodule "RF24"]
+  path = libraries/RF24
+  url = https://github.com/maniacbug/RF24.git
+[submodule "logging"]
+  path = libraries/logging
+  url = https://github.com/mrRobot62/Arduino-logging-library.git
