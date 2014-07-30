@@ -21,10 +21,14 @@ void OnUnknownCmd() {
   Log.Info("Unknown command %d."CR, cmdSource->CommandID());
 }
 
-void OnStatusCmd() {
+void OnStatusCmd() {  
   Log.Info("Led Status: %s."CR,  isDigitalOn(LED) ? "on" : "off");
   Log.Info("Relay Status: %s."CR,  isDigitalOn(RELAY) ? "on" : "off");
   Log.Info("Radio Num: %d."CR, int(radio_num));
+
+  Log.Info(CR);  
+  radio.printDetails();
+  Log.Info(CR);
 }
 
 void OnHelpCmd() {

@@ -12,6 +12,8 @@
 
 #include <RadioStream.h>
 
+#include "printf.h"
+
 #define LOGLEVEL LOG_LEVEL_DEBUG
 #define RADIO_NUM 0
 #define CE_PIN 9
@@ -46,7 +48,9 @@ CmdMessenger *cmdSource;
 bool isRouter = false;
 
 void setup() {
+  
   Log.Init(LOGLEVEL, SERIAL_BAUD);
+  printf_begin();
 
   setupStorage();
   setupRadio();
