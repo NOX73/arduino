@@ -59,7 +59,7 @@ void setup() {
   
   isRouter ? setupRouter() : setupPoint();
 
-  Log.Info("Arduino has started with role %s!"CR, isRouter ? "router" : "point");
+  Log.Info(F("Arduino has started with role %s!"CR), isRouter ? "router" : "point");
 }
 
 void loop() {
