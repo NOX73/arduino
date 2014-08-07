@@ -14,17 +14,17 @@ void OnSetDigitalCmd() {
 
   ledOn ? digitalOn(digital_num) : digitalOff(digital_num);
 
-  Log.Info("Digital #%d turn %s."CR, digital_num, ledOn ? "on" : "off");
+  Log.Info(F("Digital #%d turn %s."CR), digital_num, ledOn ? "on" : "off");
 }
 
 void OnUnknownCmd() {
-  Log.Info("Unknown command %d."CR, cmdSource->CommandID());
+  Log.Info(F("Unknown command %d."CR), cmdSource->CommandID());
 }
 
 void OnStatusCmd() {  
-  Log.Info("Led Status: %s."CR,  isDigitalOn(LED) ? "on" : "off");
-  Log.Info("Relay Status: %s."CR,  isDigitalOn(RELAY) ? "on" : "off");
-  Log.Info("Radio Num: %d."CR, int(radio_num));
+  Log.Info(F("Led Status: %s."CR),  isDigitalOn(LED) ? "on" : "off");
+  Log.Info(F("Relay Status: %s."CR),  isDigitalOn(RELAY) ? "on" : "off");
+  Log.Info(F("Radio Num: %d."CR), int(radio_num));
 
   Log.Info(CR);  
   radio.printDetails();
@@ -33,14 +33,14 @@ void OnStatusCmd() {
 
 void OnHelpCmd() {
   Log.Info(CR);
-  Log.Info("%d; - help"CR, cmdHelp);
-  Log.Info("%d; - status"CR, cmdStatus);
-  Log.Info("%d,<run setup>; - clear storage"CR, cmdClearStorage);
-  Log.Info("%d,<num>,<val>; - set digital."CR, cmdSetDigital);
-  Log.Info("\tLED - %d"CR, LED);
-  Log.Info("\tRELAY - %d"CR, RELAY);
-  Log.Info("%d,<addr>,<num>,<val>; - set romote digital"CR, cmdSetRemoteDigital);
-  Log.Info("%d,<val>; - Set radio number."CR, cmdSetRadioNum);
+  Log.Info(F("%d; - help"CR), cmdHelp);
+  Log.Info(F("%d; - status"CR), cmdStatus);
+  Log.Info(F("%d,<run setup>; - clear storage"CR), cmdClearStorage);
+  Log.Info(F("%d,<num>,<val>; - set digital."CR), cmdSetDigital);
+  Log.Info(F("\tLED - %d"CR), LED);
+  Log.Info(F("\tRELAY - %d"CR), RELAY);
+  Log.Info(F("%d,<addr>,<num>,<val>; - set romote digital"CR), cmdSetRemoteDigital);
+  Log.Info(F("%d,<val>; - Set radio number."CR), cmdSetRadioNum);
   Log.Info(CR);
 }
 
@@ -55,7 +55,7 @@ void OnClearStorageCmd() {
   bool runSetup = cmdSource->readBoolArg();
 
   clearStorage();
-  Log.Info("Storage has been cleaned.");
+  Log.Info(F("Storage has been cleaned."));
 
   if (runSetup) setupStorage();
 }
@@ -94,6 +94,6 @@ void OnSetRemoteDigitalCmd() {
   char cmd[] = {'3',',', digital_num, ',', isOn ? '1' : '0',';',0};
   sendStrToPoint(addr, cmd, sizeof(cmd));
 
-  Log.Info("Remote digital #%c on %d turn %s."CR, digital_num, addr, isOn ? "on" : "off");
+  Log.Info(F("Remote digital #%c on %d turn %s."CR), digital_num, addr, isOn ? "on" : "off");
 }
 

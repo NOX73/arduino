@@ -52,7 +52,7 @@ int radioRole() {
 bool sendIntToPoint(int addr, int val) {
   beginSend(addr);
 
-  Log.Info("Send to %d point int value = %d"CR, addr, val);
+  Log.Info(F("Send to %d point int value = %d"CR), addr, val);
 
   bool ok = radio.write( &val, sizeof(int) );
 
@@ -63,7 +63,7 @@ bool sendIntToPoint(int addr, int val) {
 bool sendCharToPoint(int addr, char val) {
   beginSend(addr);
 
-  Log.Info("Send to %d point char value = %c with size %d"CR, addr, val, sizeof(val));
+  Log.Info(F("Send to %d point char value = %c with size %d"CR), addr, val, sizeof(val));
 
   bool ok = radio.write( &val, sizeof(val) );
 
@@ -74,7 +74,7 @@ bool sendCharToPoint(int addr, char val) {
 bool sendStrToPoint(int addr, char val[], int sizeofval) {
   beginSend(addr);
 
-  Log.Info("Send to %d point string value = %s with size %d."CR, addr, val, sizeofval);
+  Log.Info(F("Send to %d point string value = %s with size %d."CR), addr, val, sizeofval);
 
   bool ok = radio.write( val, sizeofval );
 

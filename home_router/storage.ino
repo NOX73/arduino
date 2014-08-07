@@ -9,7 +9,7 @@ void setupStorage() {
   eeprom_init.restore();
 
   if (!eeprom_init) {
-    Log.Info("Init eeprom with default values."CR);
+    Log.Info(F("Init eeprom with default values."CR));
     
     digitalInitDefaults();
     radioInitDefaults();
