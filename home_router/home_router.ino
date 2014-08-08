@@ -19,6 +19,8 @@
 #define CE_PIN 9
 #define CSN_PIN 10
 #define SERIAL_BAUD 57600
+#define RADIO_PAYLOAD_SIZE 8
+#define RADIO_WRITE_RETRY 5
 
 // Global variables
 EEPROMVar<bool> eeprom_init(false);

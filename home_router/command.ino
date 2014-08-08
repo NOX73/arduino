@@ -43,7 +43,6 @@ void OnHelpCmd() {
   Log.Info(F("%d,<num>,<val>;\t\t - set digital."CR), cmdSetDigital);
   Log.Info(F("\tLED - %d"CR), LED);
   Log.Info(F("\tRELAY - %d"CR), RELAY);
-  Log.Info(F("%d,<addr>,<num>,<val>;\t - set romote digital"CR), cmdSetRemoteDigital);
   Log.Info(F("%d,<addr>,<string>;\t - send string to address"CR), cmdSendStrToPoint);
 
   Log.Info(CR);
