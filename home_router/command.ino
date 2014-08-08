@@ -1,11 +1,14 @@
 // Commands
 enum {
   cmdHelp,
+  
   cmdStatus,
   cmdClearStorage,
+  cmdSetRadioNum,
   cmdSetDigital,
-  cmdSetRemoteDigital,
-  cmdSetRadioNum
+  
+  cmdSendStrToPoint
+  
 };
 
 void OnSetDigitalCmd() {
@@ -22,9 +25,9 @@ void OnUnknownCmd() {
 }
 
 void OnStatusCmd() {  
-  Log.Info(F("Led Status: %s."CR),  isDigitalOn(LED) ? "on" : "off");
-  Log.Info(F("Relay Status: %s."CR),  isDigitalOn(RELAY) ? "on" : "off");
-  Log.Info(F("Radio Num: %d."CR), int(radio_num));
+  Log.Info(F("Led Status:\t %s."CR),  isDigitalOn(LED) ? "on" : "off");
+  Log.Info(F("Relay Status:\t %s."CR),  isDigitalOn(RELAY) ? "on" : "off");
+  Log.Info(F("Radio Num:\t %d."CR), int(radio_num));
 
   Log.Info(CR);  
   radio.printDetails();
@@ -33,14 +36,16 @@ void OnStatusCmd() {
 
 void OnHelpCmd() {
   Log.Info(CR);
-  Log.Info(F("%d; - help"CR), cmdHelp);
-  Log.Info(F("%d; - status"CR), cmdStatus);
-  Log.Info(F("%d,<run setup>; - clear storage"CR), cmdClearStorage);
-  Log.Info(F("%d,<num>,<val>; - set digital."CR), cmdSetDigital);
+  Log.Info(F("%d;\t\t\t - help"CR), cmdHelp);
+  Log.Info(F("%d;\t\t\t - status"CR), cmdStatus);
+  Log.Info(F("%d,<run setup>;\t\t - clear storage"CR), cmdClearStorage);
+  Log.Info(F("%d,<val>;\t\t - Set radio number."CR), cmdSetRadioNum);
+  Log.Info(F("%d,<num>,<val>;\t\t - set digital."CR), cmdSetDigital);
   Log.Info(F("\tLED - %d"CR), LED);
   Log.Info(F("\tRELAY - %d"CR), RELAY);
-  Log.Info(F("%d,<addr>,<num>,<val>; - set romote digital"CR), cmdSetRemoteDigital);
-  Log.Info(F("%d,<val>; - Set radio number."CR), cmdSetRadioNum);
+  Log.Info(F("%d,<addr>,<num>,<val>;\t - set romote digital"CR), cmdSetRemoteDigital);
+  Log.Info(F("%d,<addr>,<string>;\t - send string to address"CR), cmdSendStrToPoint);
+
   Log.Info(CR);
 }
 
@@ -72,28 +77,28 @@ void setupCmd() {
   cmdRadioMessenger->printLfCr();
 
   cmdMessenger->attach(OnUnknownCmd);
+  cmdRadioMessenger->attach(OnUnknownCmd);
 
   cmdMessenger->attach(cmdHelp, OnHelpCmd);
   cmdMessenger->attach(cmdStatus, OnStatusCmd);
   cmdMessenger->attach(cmdClearStorage, OnClearStorageCmd);
-
-  cmdMessenger->attach(cmdSetDigital, OnSetDigitalCmd);
-  cmdMessenger->attach(cmdSetRemoteDigital, OnSetRemoteDigitalCmd);
   cmdMessenger->attach(cmdSetRadioNum, OnSetRadioNumCmd);
+  cmdMessenger->attach(cmdSetDigital, OnSetDigitalCmd);
 
-  cmdRadioMessenger->attach(OnUnknownCmd);
-  cmdRadioMessenger->attach(cmdSetDigital, OnSetDigitalCmd);
+  cmdMessenger->attach(cmdSendStrToPoint, OnSendStrToPointCmd);
+
+  cmdRadioMessenger->attach(cmdSetDigital, OnSetDigitalCmd);  
+  cmdRadioMessenger->attach(cmdSendStrToPoint, OnSendStrToPointCmd);
+
 }
 
-void OnSetRemoteDigitalCmd() {
+void OnSendStrToPointCmd() {
   int addr = cmdSource->readInt16Arg();
-  char digital_num = cmdSource->readCharArg();
-  bool isOn = cmdSource->readBoolArg();
-
-  // TODO: get 3 from cmdSetDigital
-  char cmd[] = {'3',',', digital_num, ',', isOn ? '1' : '0',';',0};
-  sendStrToPoint(addr, cmd, sizeof(cmd));
-
-  Log.Info(F("Remote digital #%c on %d turn %s."CR), digital_num, addr, isOn ? "on" : "off");
+  char *str = cmdSource->readStringArg();
+  cmdSource->unescape(str);
+  
+  bool res = sendStrToPoint(addr, str);
+  
+  Log.Info(F("Send String To Point: %d Cmd: '%s' Result: %T"CR), addr, str, res );
 }
 

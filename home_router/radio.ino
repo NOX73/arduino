@@ -81,3 +81,15 @@ bool sendStrToPoint(int addr, char val[], int sizeofval) {
   endSend();
   return ok;
 }
+
+bool sendStrToPoint(int addr, char *str) {
+  beginSend(addr);
+  int sizeofval = 0;
+  
+  for(; str+sizeofval != 0; sizeofval++) {}
+  
+  bool ok = radio.write( str, sizeofval );
+    
+  endSend();
+  return ok;
+}
