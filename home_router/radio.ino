@@ -47,13 +47,13 @@ int radioRole() {
 }
 
 bool sendStrToPoint(int addr, char *str) {
-  signed int sizeofval = 1;
-  for (; * (str + sizeofval - 1) != 0; sizeofval++) {}
+  signed int sizeofval = 0;
+  for (; * (str + sizeofval) != 0; sizeofval++) {}
 
   bool ok = true;
   bool localOk;
 
-  for (int i = 0; i <= sizeofval; i += RADIO_PAYLOAD_SIZE) {
+  for (int i = 0; i < sizeofval; i += RADIO_PAYLOAD_SIZE) {
     radio.powerUp(); // write function call powerDown
     beginSend(addr);
 

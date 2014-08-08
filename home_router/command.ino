@@ -98,6 +98,6 @@ void OnSendStrToPointCmd() {
   
   bool res = sendStrToPoint(addr, str);
   
-  Log.Info(F("Send String To Point: %d Cmd: '%s' Result: %T"CR), addr, str, res );
+  Log.Info(F("Sended String To Point: %d Cmd: '%s' Result: %T"CR), addr, str, res );
 }
 
