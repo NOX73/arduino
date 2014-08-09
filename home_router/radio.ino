@@ -35,11 +35,11 @@ void setupRadio() {
 
 void beginSend(int addr) {
   radio.stopListening();
-    if ( isRouter ) {
-      radio.openWritingPipe(point_pipes[addr - 1]);
-    } else {
-      radio.openWritingPipe(router_pipe);
-    } 
+  if ( isRouter ) {
+    radio.openWritingPipe(point_pipes[addr - 1]);
+  } else {
+    radio.openWritingPipe(router_pipe);
+  }
 }
 
 void endSend() {
