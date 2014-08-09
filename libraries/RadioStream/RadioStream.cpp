@@ -7,17 +7,21 @@ RadioStream::RadioStream(RF24 *radio) {
 
 void RadioStream::init(RF24 *radio) {
   target = radio;
-  buffer_pointer = sizeof(buffer);
+  reset_buffer();
+}
+
+void RadioStream::reset_buffer() {
+  for(int i=0;i<sizeof(buffer);i++){buffer[i]=0;}
+  buffer_pointer = 0;
 }
 
 int RadioStream::available() {
-
   if(buffer_pointer >= recievedBuffer()){
     int a = target->available();
-    if(a){
+    if (a) {
       readFromRadio();
       return recievedBuffer();
-    }else{
+    } else {
       return a;
     }
   } else {
@@ -28,14 +32,13 @@ int RadioStream::available() {
 
 int RadioStream::recievedBuffer() {
   int i=0;
-  while(buffer[i] != 0) i++;
-
+  while(buffer[i] != 0 && i < target->getPayloadSize()) i++;
   return i;
 }
 
 void RadioStream::readFromRadio() {
+    reset_buffer();
     bool ok = target->read(buffer, sizeof(buffer));
-    buffer_pointer = 0;
 }
 
 int RadioStream::read() {
@@ -44,7 +47,6 @@ int RadioStream::read() {
   }
 
   int res = buffer[buffer_pointer];
-
   buffer_pointer++;
 
   return res;
