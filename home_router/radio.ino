@@ -34,6 +34,7 @@ void setupRadio() {
 }
 
 void beginSend(int addr) {
+  radio.powerUp(); // write function call powerDown
   radio.stopListening();
   if ( isRouter ) {
     radio.openWritingPipe(point_pipes[addr - 1]);
@@ -58,7 +59,6 @@ bool sendStrToPoint(int addr, char *str) {
   bool localOk;
 
   for (int i = 0; i < sizeofval; i += RADIO_PAYLOAD_SIZE) {
-    radio.powerUp(); // write function call powerDown
     beginSend(addr);
 
     int count = min(RADIO_PAYLOAD_SIZE, sizeofval - i);
