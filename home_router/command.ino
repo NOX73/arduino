@@ -29,6 +29,7 @@ void OnStatusCmd() {
   Log.Info(F("Led Status:\t %s."CR),  isDigitalOn(LED) ? "on" : "off");
   Log.Info(F("Relay Status:\t %s."CR),  isDigitalOn(RELAY) ? "on" : "off");
   Log.Info(F("Radio Num:\t %d."CR), int(radio_num));
+  Log.Info(F("Free memory:\t %d."CR), freeMemory());
 
   Log.Info(CR);  
   radio.printDetails();

@@ -12,6 +12,7 @@
 
 #include <RadioStream.h>
 
+#include <MemoryFree.h>
 #include "printf.h"
 
 #define LOGLEVEL LOG_LEVEL_DEBUG
