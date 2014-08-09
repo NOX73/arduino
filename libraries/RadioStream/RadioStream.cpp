@@ -58,11 +58,13 @@ int RadioStream::read() {
 }
 
 void RadioStream::flush() {
-    beginWrite();
-    ok = radio.write( wbuffer , wbuffer_pointer );
-    endWrite();
+  if(isBufferFree()){return;}
 
-    if(ok) { reset_wbuffer(); }
+  beginWrite();
+  bool ok = target->write( wbuffer , wbuffer_pointer );
+  endWrite();
+
+  if(ok) { reset_wbuffer(); }
 }
 int RadioStream::peek() { return 0; }
 
@@ -86,20 +88,20 @@ size_t RadioStream::write(uint8_t val){
 }
 
 
-bool isBufferFree() {
+bool RadioStream::isBufferFree() {
   return wbuffer_pointer == 0;
 }
 
-void beginWrite() {
+void RadioStream::beginWrite() {
   target->powerUp();
   target->stopListening();
   target->openWritingPipe(addr);
 }
-void endWrite() {
+void RadioStream::endWrite() {
   target->startListening();
 }
 
-void setAddr(int val) {
+void RadioStream::setAddr(uint64_t val) {
   addr = val;
 }
 

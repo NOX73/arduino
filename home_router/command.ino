@@ -8,7 +8,9 @@ enum {
   cmdSetDigital,
   
   cmdSendStrToPoint,
-  cmdLogStr
+  cmdLogStr,
+  
+  cmdSendDigital
   
 };
 
@@ -47,6 +49,7 @@ void OnHelpCmd() {
   Log.Info(F("\tRELAY - %d"CR), RELAY);
   Log.Info(F("%d,<addr>,<string>;\t - send string to address"CR), cmdSendStrToPoint);
   Log.Info(F("%d,<string>;\t\t - output string to console"CR), cmdLogStr);
+  Log.Info(F("%d,<addr>,<num>;\t\t - send digital value to addr."), cmdSendDigital);
 
   Log.Info(CR);
 }
@@ -89,16 +92,39 @@ void setupCmd() {
 
   cmdMessenger->attach(cmdSendStrToPoint, OnSendStrToPointCmd);
   cmdMessenger->attach(cmdLogStr, OnLogStrCmd);
+  cmdMessenger->attach(cmdSendDigital, OnSendDigitalCmd);
 
   cmdRadioMessenger->attach(cmdSetDigital, OnSetDigitalCmd);  
   cmdRadioMessenger->attach(cmdSendStrToPoint, OnSendStrToPointCmd);
   cmdRadioMessenger->attach(cmdLogStr, OnLogStrCmd);
+  
+  cmdRadioMessenger->attach(cmdSendDigital, OnSendDigitalCmd);
 
+}
+
+void OnSendDigitalCmd() {
+  int addr = cmdSource->readInt16Arg();
+  int num = cmdSource->readInt16Arg();
+  
+  char val = bitRead(PORTD,num);
+  
+  char str[20];
+  Fmt.f(str,F("digital,%d,%d;"), num, val);
+  
+  radioStream->setAddr(resolveRadioAddr(addr));
+  
+  cmdRadioMessenger->sendCmdStart(cmdLogStr);
+  cmdRadioMessenger->sendCmdEscArg(str);
+  cmdRadioMessenger->sendCmdEnd();
+  
+  radioStream->flush();
+  
+  Log.Info(F("Send to %d digital #%d = %d."CR), addr, num, val);
 }
 
 void OnLogStrCmd() {
   char *str = cmdSource->readStringArg();
-  
+  cmdSource->unescape(str);
   Log.Info(F("LOG:%s"CR), str);
 }
 

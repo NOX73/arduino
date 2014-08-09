@@ -14,14 +14,16 @@ class RadioStream : public Stream
     char wbuffer[RADIO_STREAM_PAYLOAD_SIZE];
     int buffer_pointer;
     int wbuffer_pointer;
-    int addr;
+    uint64_t addr;
 
     void init(RF24 *radio);
     void readFromRadio();
     int recievedBuffer();
+
     void reset_buffer();
     void reset_wbuffer();
 
+    bool isBufferFree();
     void beginWrite();
     void endWrite();
 
@@ -35,7 +37,7 @@ class RadioStream : public Stream
     int peek();
     int available();
 
-    void setAddr(int addr);
+    void setAddr(uint64_t addr);
 };
 
 #endif

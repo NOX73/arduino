@@ -4,6 +4,7 @@
 #include <EEPROMVar.h>
 #include <EEPROMex.h>
 #include <Logging.h>
+#include <Formatter.h>
 
 #include <SPI.h>
 #include <nRF24L01.h>
