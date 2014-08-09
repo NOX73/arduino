@@ -7,7 +7,7 @@ char* Formatter::f(char *out, const __FlashStringHelper *fmt, ...) {
   va_start(args, fmt);
 
   PGM_P p = reinterpret_cast<PGM_P>(fmt);
-  char c = pgm_read_byte(p++);
+  char c;
 
   do {
     c = pgm_read_byte(p++);
@@ -18,7 +18,7 @@ char* Formatter::f(char *out, const __FlashStringHelper *fmt, ...) {
       *out = c;
       out++;
     }
-  }while(c != 0);
+  } while(c != 0);
 
   *out = 0;
 
