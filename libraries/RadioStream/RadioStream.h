@@ -11,12 +11,19 @@ class RadioStream : public Stream
   private:
     RF24 *target;
     char buffer[RADIO_STREAM_PAYLOAD_SIZE];
+    char wbuffer[RADIO_STREAM_PAYLOAD_SIZE];
     int buffer_pointer;
+    int wbuffer_pointer;
+    int addr;
 
     void init(RF24 *radio);
     void readFromRadio();
     int recievedBuffer();
     void reset_buffer();
+    void reset_wbuffer();
+
+    void beginWrite();
+    void endWrite();
 
   public: 
 
@@ -27,6 +34,8 @@ class RadioStream : public Stream
     void flush();
     int peek();
     int available();
+
+    void setAddr(int addr);
 };
 
 #endif
