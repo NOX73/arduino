@@ -7,7 +7,8 @@ enum {
   cmdSetRadioNum,
   cmdSetDigital,
   
-  cmdSendStrToPoint
+  cmdSendStrToPoint,
+  cmdLogStr
   
 };
 
@@ -44,6 +45,7 @@ void OnHelpCmd() {
   Log.Info(F("\tLED - %d"CR), LED);
   Log.Info(F("\tRELAY - %d"CR), RELAY);
   Log.Info(F("%d,<addr>,<string>;\t - send string to address"CR), cmdSendStrToPoint);
+  Log.Info(F("%d,<string>;\t\t - output string to console"CR), cmdLogStr);
 
   Log.Info(CR);
 }
@@ -85,10 +87,18 @@ void setupCmd() {
   cmdMessenger->attach(cmdSetDigital, OnSetDigitalCmd);
 
   cmdMessenger->attach(cmdSendStrToPoint, OnSendStrToPointCmd);
+  cmdMessenger->attach(cmdLogStr, OnLogStrCmd);
 
   cmdRadioMessenger->attach(cmdSetDigital, OnSetDigitalCmd);  
   cmdRadioMessenger->attach(cmdSendStrToPoint, OnSendStrToPointCmd);
+  cmdRadioMessenger->attach(cmdLogStr, OnLogStrCmd);
 
+}
+
+void OnLogStrCmd() {
+  char *str = cmdSource->readStringArg();
+  
+  Log.Info(F("LOG:%s"CR), str);
 }
 
 void OnSendStrToPointCmd() {
