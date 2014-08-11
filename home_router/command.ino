@@ -133,8 +133,11 @@ void OnSendStrToPointCmd() {
   char *str = cmdSource->readStringArg();
   cmdSource->unescape(str);
   
-  bool res = sendStrToPoint(addr, str);
+  //bool res = sendStrToPoint(addr, str);
+  radioStream->setAddr(resolveRadioAddr(addr));
+  radioStream->write(str);
+  radioStream->flush();
   
-  Log.Info(F("Sended String To Point: %d Cmd: '%s' Result: %T"CR), addr, str, res );
+  Log.Info(F("Sended String To Point: %d Cmd: '%s' Result: %T"CR), addr, str, true);
 }
 

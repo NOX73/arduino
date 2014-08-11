@@ -87,6 +87,15 @@ size_t RadioStream::write(uint8_t val){
   }
 }
 
+size_t RadioStream::write(char *str){
+  size_t l = 0;
+  while(*str != 0){
+    write((uint8_t)*str);
+    str++;
+    l++;
+  }
+  return l;
+}
 
 bool RadioStream::isBufferFree() {
   return wbuffer_pointer == 0;

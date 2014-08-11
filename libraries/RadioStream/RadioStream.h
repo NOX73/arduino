@@ -32,6 +32,8 @@ class RadioStream : public Stream
     RadioStream(RF24 *radio);
 
     size_t write(uint8_t val);
+    size_t write(char *str);
+
     int read();
     void flush();
     int peek();
