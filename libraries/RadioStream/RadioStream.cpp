@@ -62,6 +62,7 @@ void RadioStream::flush() {
 
   beginWrite();
   bool ok = target->write( wbuffer , wbuffer_pointer );
+  delay(50);
   endWrite();
 
   if(ok) { reset_wbuffer(); }
