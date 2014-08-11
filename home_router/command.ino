@@ -117,8 +117,6 @@ void OnSendDigitalCmd() {
   cmdRadioMessenger->sendCmdEscArg(str);
   cmdRadioMessenger->sendCmdEnd();
   
-  radioStream->flush();
-  
   Log.Info(F("Send to %d digital #%d = %d."CR), addr, num, val);
 }
 
@@ -136,7 +134,6 @@ void OnSendStrToPointCmd() {
   //bool res = sendStrToPoint(addr, str);
   radioStream->setAddr(resolveRadioAddr(addr));
   radioStream->write(str);
-  radioStream->flush();
   
   Log.Info(F("Sended String To Point: %d Cmd: '%s' Result: %T"CR), addr, str, true);
 }
