@@ -1,3 +1,5 @@
+init: sandbox_init deps config
+
 build:
 	cabal build home_server
 
@@ -7,3 +9,10 @@ run:
 deps:
 	cabal update && \
 	cabal install --only-dependencies
+
+sandbox_init:
+	cabal sandbox init
+
+config:
+	cabal configure
+
