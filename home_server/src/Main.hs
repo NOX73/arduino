@@ -3,7 +3,8 @@ import Web.Scotty
 import Controllers.Home as H
 import Network.Wai.Middleware.RequestLogger (logStdoutDev)
 import Network.Wai.Middleware.Static (addBase, noDots, staticPolicy, (>->))
-import System.Log.Logger 
+import System.Log.Logger
+import House.Process as P
 
 main = do
 

@@ -4,7 +4,6 @@ module Arduino.DevicePath (
 
 import System.Directory (getDirectoryContents)
 import Data.List (isInfixOf)
-import Control.Monad (filterM)
 import Data.Functor
 
 type DevicePath = String
@@ -13,7 +12,7 @@ isTTY :: DevicePath -> Bool
 isTTY = isInfixOf "tty"
 
 isUSB :: DevicePath -> Bool
-isUSB = isInfixOf "Blu"
+isUSB = isInfixOf "USB"
 
 isDevice :: DevicePath -> Bool
 isDevice path = isTTY path && isUSB path
@@ -24,5 +23,9 @@ allDevicePaths = getDirectoryContents "/dev/"
 devicePaths :: IO [DevicePath]
 devicePaths = filter isDevice <$> allDevicePaths
 
-devicePath :: IO DevicePath
-devicePath = head <$> devicePaths
+getFirst :: [DevicePath] -> Maybe DevicePath
+getFirst [] = Nothing
+getFirst (h:_) = Just h
+
+devicePath :: IO (Maybe DevicePath)
+devicePath =  getFirst <$> devicePaths
