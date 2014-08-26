@@ -5,9 +5,11 @@ import Network.Wai.Middleware.RequestLogger (logStdoutDev)
 import Network.Wai.Middleware.Static (addBase, noDots, staticPolicy, (>->))
 import System.Log.Logger
 import House.Process as P
+import Control.Monad.IO.Class (liftIO)
 
 main = do
 
+  pid <- P.start
   updateGlobalLogger rootLoggerName (setLevel DEBUG)
 
   scotty 3000 $ do
