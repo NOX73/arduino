@@ -10,31 +10,31 @@ import Control.Distributed.Process.Node
 import Control.Monad (forever)
 import Control.Concurrent (threadDelay)
 import Data.Functor
-{-import Control.Monad-}
 
-mainDelay = 1 * 1000000
-childDelay = 1 * 1000000
+import Arduino.Controller as AC (start)
 
-start :: IO ProcessId
+start :: IO (ProcessId, LocalNode)
 start = do
   Right t <- createTransport "127.0.0.1" "10501" defaultTCPParameters
   node <- newLocalNode t initRemoteTable
-  forkProcess node $ mainProcess
+  pid <- forkProcess node $ mainProcess
+  return (pid, node)
 
 mainProcess :: Process ()
 mainProcess = do
-  childPid <- spawnLocal $ childProcess
+
+  arduinoController <- AC.start
+
   forever $ do
-    let message = "hello"
-    send childPid message
-    liftIO $ do infoM rootLoggerName ("Main process sended message: " ++ message )
-                threadDelay mainDelay
+
+    liftIO $ infoM rootLoggerName ("Main process expect message ... ")
+    receiveMessage <- expect :: Process String
+    liftIO $ infoM rootLoggerName ("Main process receive message: " ++ receiveMessage )
+
+    send arduinoController ("5,1,4/,4/,0/;;" :: String)
 
 childProcess :: Process ()
 childProcess = forever $ do
-
   message <- expect :: Process String
-
   liftIO $ do infoM rootLoggerName ("Child received message: " ++ message)
-              threadDelay childDelay
 

@@ -7,14 +7,19 @@ import System.Log.Logger
 import House.Process as P
 import Control.Monad.IO.Class (liftIO)
 
+import State
+import Control.Distributed.Process
+
 main = do
 
-  pid <- P.start
+  (pid, node) <- P.start
   updateGlobalLogger rootLoggerName (setLevel DEBUG)
+
+  state <- return $ State pid node
 
   scotty 3000 $ do
 
     middleware logStdoutDev
     middleware $ staticPolicy (noDots >-> addBase "static/")
 
-    get "/" $ H.index
+    get "/" $ H.index state
