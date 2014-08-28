@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Controllers.Home ( index ) where
 
 import Web.Scotty
@@ -10,16 +11,21 @@ import State
 import System.Log.Logger (infoM, rootLoggerName)
 import Control.Distributed.Process
 
+import House (turnOff, turnOn)
+
 index :: State -> ActionM ()
 index state = do
-  sendHello
+  p <- param "pos"
+  liftIO $ sendCommand $ fromString p
   body <- liftIO getBody
   html $ fromString $ body
 
-  where sendHello = do 
-          liftIO $ infoM rootLoggerName "sending..."
-          liftIO $ sendHelloToMainProcess state
+  where sendCommand "on" = turnOn state
+        sendCommand "off" = turnOff state
 
         getBody = do
           path <- devicePath
           return $ fromMaybe "NO" path
+
+
+

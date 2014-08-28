@@ -1,3 +1,6 @@
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
+
 module House.Process where
 
 import qualified Data.Map.Strict as M
@@ -12,6 +15,15 @@ import Control.Concurrent (threadDelay)
 import Data.Functor
 
 import Arduino.Controller as AC (start)
+
+import Data.Binary
+import GHC.Generics (Generic)
+import Data.Typeable
+
+data Command = TurnOn | TurnOff | Message String
+  deriving (Show, Eq, Generic, Typeable)
+
+instance Binary Command
 
 start :: IO (ProcessId, LocalNode)
 start = do
@@ -28,13 +40,20 @@ mainProcess = do
   forever $ do
 
     liftIO $ infoM rootLoggerName ("Main process expect message ... ")
-    receiveMessage <- expect :: Process String
-    liftIO $ infoM rootLoggerName ("Main process receive message: " ++ receiveMessage )
+    command <- expect :: Process Command
+    processCommand arduinoController command
+    {-liftIO $ infoM rootLoggerName ("Main process receive message: " ++ receiveMessage )-}
 
-    send arduinoController ("5,1,4/,4/,0/;;" :: String)
+    {-send arduinoController ("5,1,4/,4/,0/;;" :: String)-}
 
 childProcess :: Process ()
 childProcess = forever $ do
   message <- expect :: Process String
   liftIO $ do infoM rootLoggerName ("Child received message: " ++ message)
+
+processCommand :: ProcessId -> Command -> Process ()
+processCommand arduino TurnOn = send arduino ("5,1,4/,4/,1/;;" :: String)
+processCommand arduino TurnOff = send arduino ("5,1,4/,4/,0/;;" :: String)
+processCommand arduino command = liftIO $ infoM rootLoggerName ("Main process receive command: " ++ show command )
+ 
 
