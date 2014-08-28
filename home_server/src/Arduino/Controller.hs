@@ -15,8 +15,8 @@ start = spawnLocal $ mainProcess
 
 mainProcess :: Process ()
 mainProcess = do
-  {-path <- liftIO devicePath-}
-  loopProcess $ Just "/tmp/1"
+  path <- liftIO devicePath
+  loopProcess $ path
 
 loopProcess :: Maybe String -> Process ()
 loopProcess Nothing = forever $ do

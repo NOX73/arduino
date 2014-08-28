@@ -8,6 +8,8 @@ import Data.Functor
 
 type DevicePath = String
 
+directory = "/dev/"
+
 isTTY :: DevicePath -> Bool
 isTTY = isInfixOf "tty"
 
@@ -18,7 +20,7 @@ isDevice :: DevicePath -> Bool
 isDevice path = isTTY path && isUSB path
 
 allDevicePaths :: IO [DevicePath]
-allDevicePaths = getDirectoryContents "/dev/"
+allDevicePaths = getDirectoryContents directory
 
 devicePaths :: IO [DevicePath]
 devicePaths = filter isDevice <$> allDevicePaths
@@ -27,5 +29,9 @@ getFirst :: [DevicePath] -> Maybe DevicePath
 getFirst [] = Nothing
 getFirst (h:_) = Just h
 
+fullPath :: Maybe DevicePath -> Maybe DevicePath
+fullPath Nothing = Nothing
+fullPath (Just path) = Just (directory ++ path)
+
 devicePath :: IO (Maybe DevicePath)
-devicePath =  getFirst <$> devicePaths
+devicePath =  fullPath <$> getFirst <$> devicePaths
