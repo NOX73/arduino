@@ -40,7 +40,8 @@ mainProcess = do
   forever $ do
 
     liftIO $ infoM rootLoggerName ("Main process expect message ... ")
-    command <- expect :: Process Command
+    {-command <- expect :: Process Command-}
+    command <- expect :: Process String
     processCommand arduinoController command
     {-liftIO $ infoM rootLoggerName ("Main process receive message: " ++ receiveMessage )-}
 
@@ -51,9 +52,15 @@ childProcess = forever $ do
   message <- expect :: Process String
   liftIO $ do infoM rootLoggerName ("Child received message: " ++ message)
 
-processCommand :: ProcessId -> Command -> Process ()
-processCommand arduino TurnOn = send arduino ("5,1,4/,4/,1/;;" :: String)
-processCommand arduino TurnOff = send arduino ("5,1,4/,4/,0/;;" :: String)
-processCommand arduino command = liftIO $ infoM rootLoggerName ("Main process receive command: " ++ show command )
+
+processCommand :: ProcessId -> String -> Process ()
+processCommand arduino "on" = send arduino ("5,1,4/,4/,1/;;" :: String)
+processCommand arduino "off" = send arduino ("5,1,4/,4/,0/;;" :: String)
+processCommand arduino command = liftIO $ infoM rootLoggerName ("Main process receive command: " ++ command )
+
+{-processCommand :: ProcessId -> Command -> Process ()-}
+{-processCommand arduino TurnOn = send arduino ("5,1,4/,4/,1/;;" :: String)-}
+{-processCommand arduino TurnOff = send arduino ("5,1,4/,4/,0/;;" :: String)-}
+{-processCommand arduino command = liftIO $ infoM rootLoggerName ("Main process receive command: " ++ show command )-}
  
 

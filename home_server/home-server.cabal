@@ -13,7 +13,7 @@ maintainer:          nox73@ya.ru
 -- category:
 build-type:          Simple
 -- extra-source-files:
-cabal-version:       >=1.10
+cabal-version:       >=1.20
 
 executable home_server
   main-is:           Main.hs
@@ -32,6 +32,8 @@ executable home_server
                      , network-transport-tcp
                      , deepseq
                      , binary
+                     , serialport
+                     , bytestring
 
   hs-source-dirs: src
   default-language:    Haskell2010
