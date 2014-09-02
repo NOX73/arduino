@@ -1,5 +1,6 @@
 
 void setupPoint() {
+  setupDigitalPins();
 }
 
 void pointLoop() {

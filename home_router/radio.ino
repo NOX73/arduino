@@ -51,6 +51,8 @@ int radioRole() {
   return radio_num == 0 ? radio_role_router : radio_role_point;
 }
 
+
+//Does not used
 bool sendStrToPoint(int addr, char *str) {
   signed int sizeofval = 0;
   for (; * (str + sizeofval) != 0; sizeofval++) {}

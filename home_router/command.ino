@@ -131,7 +131,6 @@ void OnSendStrToPointCmd() {
   char *str = cmdSource->readStringArg();
   cmdSource->unescape(str);
   
-  //bool res = sendStrToPoint(addr, str);
   radioStream->setAddr(resolveRadioAddr(addr));
   radioStream->write(str);
   

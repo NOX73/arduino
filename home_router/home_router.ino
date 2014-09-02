@@ -37,12 +37,6 @@ EEPROMVar<int> digitals[2] = {HIGH, HIGH};
 
 RF24 radio(CE_PIN, CSN_PIN);
 
-//CmdMessenger cmdMessenger = CmdMessenger(Serial);
-//RadioStream radioStream = RadioStream(&radio);
-//CmdMessenger cmdRadioMessenger = CmdMessenger(radioStream);
-
-//CmdMessenger *cmdSource = &cmdMessenger;
-
 CmdMessenger *cmdMessenger;
 CmdMessenger *cmdRadioMessenger;
 RadioStream *radioStream;
@@ -59,7 +53,7 @@ void setup() {
   setupStorage();
   setupRadio();
   setupCmd();
-  setupDigitalPins();
+  //setupDigitalPins();
   
   isRouter ? setupRouter() : setupPoint();
 
