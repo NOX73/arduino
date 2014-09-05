@@ -51,6 +51,16 @@ int radioRole() {
   return radio_num == 0 ? radio_role_router : radio_role_point;
 }
 
+void sendLogToPoint(int addr, char *str) {
+  radioStream->setAddr(resolveRadioAddr(addr));
+  
+  cmdRadioMessenger->sendCmdStart(cmdLogStr);
+  cmdRadioMessenger->sendCmdEscArg(str);
+  cmdRadioMessenger->sendCmdEnd();
+
+  Log.Debug(F("Send to %d log '%s'"CR), addr, str);
+}
+
 
 //Does not used
 bool sendStrToPoint(int addr, char *str) {

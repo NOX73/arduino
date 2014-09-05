@@ -53,8 +53,7 @@ void setup() {
   setupStorage();
   setupRadio();
   setupCmd();
-  //setupDigitalPins();
-  
+
   isRouter ? setupRouter() : setupPoint();
 
   Log.Info(F("Arduino has started with role %s!"CR), isRouter ? "router" : "point");

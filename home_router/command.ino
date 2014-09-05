@@ -109,13 +109,10 @@ void OnSendDigitalCmd() {
   char val = bitRead(PORTD,num);
   
   char str[20];
-  Fmt.f(str,F("digital,%d,%d;"), num, val);
+  // from, message type, pin number, value
+  Fmt.f(str,F("%d,digital,%d,%d;"), int(radio_num), num, val);
   
-  radioStream->setAddr(resolveRadioAddr(addr));
-  
-  cmdRadioMessenger->sendCmdStart(cmdLogStr);
-  cmdRadioMessenger->sendCmdEscArg(str);
-  cmdRadioMessenger->sendCmdEnd();
+  sendLogToPoint(addr, str);
   
   Log.Info(F("Send to %d digital #%d = %d."CR), addr, num, val);
 }
@@ -123,7 +120,7 @@ void OnSendDigitalCmd() {
 void OnLogStrCmd() {
   char *str = cmdSource->readStringArg();
   cmdSource->unescape(str);
-  Log.Info(F("LOG:%s"CR), str);
+  Log.Info(F(">>>:%s"CR), str);
 }
 
 void OnSendStrToPointCmd() {

@@ -1,6 +1,17 @@
 
 void setupPoint() {
   setupDigitalPins();
+  sendConnectedToRouter();
+}
+
+void sendConnectedToRouter() {
+  cmdSource = cmdRadioMessenger;
+
+  char str[20];
+  //from, message type
+  Fmt.f(str,F("%d,connected;"), int(radio_num));
+
+  sendLogToPoint(0, str);
 }
 
 void pointLoop() {
@@ -9,7 +20,7 @@ void pointLoop() {
 
   cmdSource = cmdMessenger;
   cmdMessenger->feedinSerialData();
-  
+
   Serial.flush();
   radioStream->flush();
 }
