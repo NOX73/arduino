@@ -17,11 +17,11 @@ import Data.Functor
 import Arduino.Controller as AC (start)
 
 import Data.Binary
-import GHC.Generics (Generic)
 import Data.Typeable
+import GHC.Generics (Generic)
 
 data Command = TurnOn | TurnOff | Message String
-  deriving (Show, Eq, Generic, Typeable)
+  deriving (Show, Eq, Typeable, Generic)
 
 instance Binary Command
 
@@ -37,30 +37,22 @@ mainProcess = do
 
   arduinoController <- AC.start
 
+  {-self <- getSelfPid-}
+  {-spawnLocal $ senderProcess self-}
+
   forever $ do
-
     liftIO $ infoM rootLoggerName ("Main process expect message ... ")
-    {-command <- expect :: Process Command-}
-    command <- expect :: Process String
+    command <- expect :: Process Command
     processCommand arduinoController command
-    {-liftIO $ infoM rootLoggerName ("Main process receive message: " ++ receiveMessage )-}
 
-    {-send arduinoController ("5,1,4/,4/,0/;;" :: String)-}
+processCommand :: ProcessId -> Command -> Process ()
+processCommand arduino TurnOn = send arduino ("5,1,4/,4/,1/;;" :: String)
+processCommand arduino TurnOff = send arduino ("5,1,4/,4/,0/;;" :: String)
+processCommand arduino command = liftIO $ infoM rootLoggerName ("Main process receive unporcessed command: " ++ show command )
 
-childProcess :: Process ()
-childProcess = forever $ do
-  message <- expect :: Process String
-  liftIO $ do infoM rootLoggerName ("Child received message: " ++ message)
-
-
-processCommand :: ProcessId -> String -> Process ()
-processCommand arduino "on" = send arduino ("5,1,4/,4/,1/;;" :: String)
-processCommand arduino "off" = send arduino ("5,1,4/,4/,0/;;" :: String)
-processCommand arduino command = liftIO $ infoM rootLoggerName ("Main process receive command: " ++ command )
-
-{-processCommand :: ProcessId -> Command -> Process ()-}
-{-processCommand arduino TurnOn = send arduino ("5,1,4/,4/,1/;;" :: String)-}
-{-processCommand arduino TurnOff = send arduino ("5,1,4/,4/,0/;;" :: String)-}
-{-processCommand arduino command = liftIO $ infoM rootLoggerName ("Main process receive command: " ++ show command )-}
- 
+{-senderProcess pid = forever $ do-}
+  {-liftIO $ threadDelay (1*1000000)-}
+  {-Just info <- getProcessInfo pid-}
+  {-liftIO $ infoM rootLoggerName (show info)-}
+  {-send pid (Message "on" )-}
 

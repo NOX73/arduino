@@ -30,8 +30,7 @@ executable home_server
                      , distributed-process
                      , containers
                      , network-transport-tcp
-                     , deepseq
-                     , binary
+                     , binary >= 0.6.3.0 && < 0.8
                      , serialport
                      , bytestring
 
