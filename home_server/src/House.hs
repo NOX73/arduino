@@ -5,7 +5,7 @@ module House (
 
 import Control.Distributed.Process
 import Control.Distributed.Process.Node
-import House.Process ( Command(..) )
+import House.Command ( Command(..) )
 import State
 
 turnOn :: State -> IO ()

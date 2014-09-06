@@ -1,6 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE DeriveGeneric #-}
-
 module House.Process where
 
 import qualified Data.Map.Strict as M
@@ -14,16 +11,9 @@ import Control.Monad (forever)
 import Control.Concurrent (threadDelay)
 import Data.Functor
 
+import House.Command
+
 import Arduino.Controller as AC (start)
-
-import Data.Binary
-import Data.Typeable
-import GHC.Generics (Generic)
-
-data Command = TurnOn | TurnOff | Message String
-  deriving (Show, Eq, Typeable, Generic)
-
-instance Binary Command
 
 start :: IO (ProcessId, LocalNode)
 start = do
