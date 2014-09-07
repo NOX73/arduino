@@ -124,7 +124,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     PATH=$PATH:$HOME/.cabal/bin/
     cd ~/home_server && \
     rm -rf src/* && \
-    cp -R /arduino/src/* src/ && \
+    cp -R /arduino/* ./ && \
+    rm cabal.sandbox.config && \
+    cabal sandbox init && \
+    make config && \
     make build && \
     cp dist/build/home_server/home_server /arduino/dist/build/home_server/home_server.linux
   SCRIPT

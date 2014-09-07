@@ -11,31 +11,61 @@ import Control.Monad (forever)
 import System.IO
 import System.Hardware.Serialport as Serial
 
-import Data.ByteString.Char8 (pack)
+import Data.ByteString.Char8 (pack, unpack) 
+
+import Data.Functor
+import Control.Monad
+{-import Control.Applicative-}
+{-import Data.Foldable-}
+
+type PortsPair = (SendPort String, ReceivePort String)
 
 serialSettings = SerialPortSettings CS57600 8 One NoParity NoFlowControl 1
 
-start :: Process ProcessId
-start = spawnLocal $ mainProcess
+start :: Process PortsPair
+start = do
+  (inChanSend,inChanReceive) <- newChan :: Process PortsPair
+  (outChanSend,outChanReceive) <- newChan :: Process PortsPair
 
-mainProcess :: Process ()
-mainProcess = do
-  path <- liftIO devicePath
-  loopProcess $ path
+  spawnLocal $ mainProcess (outChanSend, inChanReceive)
+  return (inChanSend, outChanReceive)
 
-loopProcess :: Maybe String -> Process ()
-loopProcess Nothing = forever $ do
+openDevice :: IO (Maybe SerialPort)
+openDevice =  liftIO devicePath >>= oDevice
+
+oDevice :: Maybe String -> IO (Maybe SerialPort)
+oDevice Nothing = return Nothing
+oDevice (Just path) = do
+  serial <- Serial.openSerial path serialSettings
+  return $ Just serial
+{-oDevice :: Maybe String -> Maybe SerialPort-}
+{-oDevice p = p >>= (flip Serial.openSerial serialSettings)-}
+
+mainProcess :: PortsPair -> Process ()
+mainProcess channels = do
+  file <- liftIO openDevice
+  loopProcess file channels
+
+loopProcess :: Maybe SerialPort -> PortsPair -> Process ()
+loopProcess Nothing _ = forever $ do
   _ <- expect :: Process String
   liftIO $ errorM rootLoggerName "Arduino Controller can't open device."
-loopProcess (Just path) = do
-  {-file <- liftIO $ openFile path ReadWriteMode-}
-  file <- liftIO $ Serial.openSerial path serialSettings
+loopProcess (Just port) (outChannel,inChannel)  = do
+  spawnLocal $ readProcess outChannel port
   forever $ do
-    message <- expect :: Process String
+    message <- receiveChan inChannel :: Process String
     liftIO $ do
       infoM rootLoggerName ("Arduino Controller receive message: " ++ message )
-      {-hPutStrLn file message-}
-      Serial.send file (pack message)
-      Serial.flush file
-      {-hFlush file-}
+      Serial.send port (pack message)
+      Serial.flush port
+
+readProcess :: SendPort String -> SerialPort-> Process ()
+readProcess channel port = forever $ do
+  lns <- liftIO $ readLine port
+  mapM (sendChan channel) lns
+
+readLine :: SerialPort -> IO [String]
+readLine port = do
+  content <- recv port 1
+  return $ lines $ unpack $ content
 

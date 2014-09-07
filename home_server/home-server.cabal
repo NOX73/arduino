@@ -19,6 +19,10 @@ executable home_server
   main-is:           Main.hs
   -- other-modules:
   -- other-extensions:
+  ghc-options:  -threaded
+                -O2
+                -rtsopts
+                -with-rtsopts=-N
   build-depends:       base >=4.6 && <4.7
                      , monad-logger
                      , scotty

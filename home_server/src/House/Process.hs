@@ -24,21 +24,25 @@ start = do
 
 mainProcess :: Process ()
 mainProcess = do
+  (arduinoIn, arduinoOut) <- AC.start
 
-  arduinoController <- AC.start
-
-  {-self <- getSelfPid-}
-  {-spawnLocal $ senderProcess self-}
+  self <- getSelfPid
+  spawnLocal $ arduinoLog arduinoOut
 
   forever $ do
     liftIO $ infoM rootLoggerName ("Main process expect message ... ")
     command <- expect :: Process Command
-    processCommand arduinoController command
+    sendCommand command arduinoIn
 
-processCommand :: ProcessId -> Command -> Process ()
-processCommand arduino TurnOn = send arduino ("5,1,4/,4/,1/;;" :: String)
-processCommand arduino TurnOff = send arduino ("5,1,4/,4/,0/;;" :: String)
-processCommand arduino command = liftIO $ infoM rootLoggerName ("Main process receive unporcessed command: " ++ show command )
+sendCommand :: Command -> SendPort String -> Process ()
+sendCommand TurnOn  = flip sendChan "5,1,4/,4/,1/;;"
+sendCommand TurnOff = flip sendChan "5,1,4/,4/,0/;;"
+sendCommand command = const $ liftIO $ infoM rootLoggerName ("Main process receive unporcessed command: " ++ show command )
+
+arduinoLog :: ReceivePort String -> Process ()
+arduinoLog channel = forever $ do
+  line <- receiveChan channel :: Process String
+  liftIO $ infoM rootLoggerName ("Arduino Router log: " ++ line )
 
 {-senderProcess pid = forever $ do-}
   {-liftIO $ threadDelay (1*1000000)-}
