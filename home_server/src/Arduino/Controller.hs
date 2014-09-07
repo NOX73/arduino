@@ -4,7 +4,7 @@ module Arduino.Controller (
 
 import Control.Distributed.Process
 import Control.Distributed.Process.Node
-import System.Log.Logger (errorM, infoM, rootLoggerName)
+import System.Log.Logger (errorM, infoM, debugM, rootLoggerName)
 import Arduino.DevicePath ( devicePath )
 import Control.Monad (forever)
 

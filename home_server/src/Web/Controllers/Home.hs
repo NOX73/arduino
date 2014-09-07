@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Controllers.Home ( index ) where
+module Web.Controllers.Home ( index ) where
 
 import Web.Scotty
 import Arduino.DevicePath (devicePath)

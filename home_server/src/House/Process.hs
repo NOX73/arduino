@@ -1,7 +1,7 @@
 module House.Process where
 
 import qualified Data.Map.Strict as M
-import System.Log.Logger (infoM, rootLoggerName)
+import System.Log.Logger (infoM, debugM, rootLoggerName)
 
 import Network.Transport.TCP (createTransport, defaultTCPParameters)
 import Control.Distributed.Process

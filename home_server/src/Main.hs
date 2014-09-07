@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 import Web.Scotty
-import Controllers.Home as H
+import Web.Controllers.Home as HomeController
 import Network.Wai.Middleware.RequestLogger (logStdoutDev)
 import Network.Wai.Middleware.Static (addBase, noDots, staticPolicy, (>->))
 import System.Log.Logger
-import House.Process as P
+import House (start)
 import Control.Monad.IO.Class (liftIO)
 
 import State
@@ -12,7 +12,7 @@ import Control.Distributed.Process
 
 main = do
 
-  (pid, node) <- P.start
+  (pid, node) <- House.start
   updateGlobalLogger rootLoggerName (setLevel DEBUG)
 
   state <- return $ State pid node
@@ -22,4 +22,4 @@ main = do
     {-middleware logStdoutDev-}
     middleware $ staticPolicy (noDots >-> addBase "static/")
 
-    get "/" $ H.index state
+    get "/" $ HomeController.index state
