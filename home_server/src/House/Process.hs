@@ -30,7 +30,7 @@ mainProcess = do
   spawnLocal $ arduinoLog arduinoOut
 
   forever $ do
-    liftIO $ infoM rootLoggerName ("Main process expect message ... ")
+    liftIO $ debugM rootLoggerName ("Main process expect message ... ")
     command <- expect :: Process Command
     sendCommand command arduinoIn
 

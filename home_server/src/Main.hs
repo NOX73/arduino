@@ -19,7 +19,7 @@ main = do
 
   scotty 3000 $ do
 
-    middleware logStdoutDev
+    {-middleware logStdoutDev-}
     middleware $ staticPolicy (noDots >-> addBase "static/")
 
     get "/" $ H.index state

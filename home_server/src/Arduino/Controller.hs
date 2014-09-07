@@ -15,8 +15,10 @@ import Data.ByteString.Char8 (pack, unpack)
 
 import Data.Functor
 import Control.Monad
-{-import Control.Applicative-}
+import Control.Applicative
 {-import Data.Foldable-}
+
+import Data.List (isSuffixOf)
 
 type PortsPair = (SendPort String, ReceivePort String)
 
@@ -55,17 +57,32 @@ loopProcess (Just port) (outChannel,inChannel)  = do
   forever $ do
     message <- receiveChan inChannel :: Process String
     liftIO $ do
-      infoM rootLoggerName ("Arduino Controller receive message: " ++ message )
+      debugM rootLoggerName ("Arduino Controller receive message: " ++ message )
       Serial.send port (pack message)
       Serial.flush port
 
 readProcess :: SendPort String -> SerialPort-> Process ()
 readProcess channel port = forever $ do
-  lns <- liftIO $ readLine port
-  mapM (sendChan channel) lns
+  ln <- liftIO $ readLine port
+  {-mapM (sendChan channel) ln-}
+  sendChan channel ln
 
-readLine :: SerialPort -> IO [String]
-readLine port = do
-  content <- recv port 1
-  return $ lines $ unpack $ content
+readChar :: SerialPort -> IO Char
+readChar port = do
+  ch <- unpack <$> recv port 1
+  case ch of
+    [] -> readChar port
+    ch -> return $ head $ ch
 
+readLine :: SerialPort -> IO String
+readLine port = readLine' port ""
+
+readLine' :: SerialPort -> String -> IO String
+readLine' port str = do
+  char <- readChar port
+  let str' = str ++ [char]
+  case isLine str' of
+    True -> return $ removeEOL str'
+    False -> readLine' port str'
+  where isLine = isSuffixOf "\r\n"
+        removeEOL = init . init
