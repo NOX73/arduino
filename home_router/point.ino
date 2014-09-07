@@ -5,8 +5,6 @@ void setupPoint() {
 }
 
 void sendConnectedToRouter() {
-  cmdSource = cmdRadioMessenger;
-
   char str[20];
   //from, message type
   Fmt.f(str,F("%d,connected;"), int(radio_num));

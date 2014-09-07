@@ -7,7 +7,7 @@ void routerLoop() {
 
   cmdSource = cmdMessenger;
   cmdMessenger->feedinSerialData();
-  
+
   Serial.flush();
   radioStream->flush();
 }
