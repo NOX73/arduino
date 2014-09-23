@@ -34,7 +34,7 @@ func (r *router) Read () ([]byte, error) {
   var err error;
   var length int32;
 
-  err = binary.Read(r.serial, binary.LittleEndian, length);
+  err = binary.Read(r.serial, binary.LittleEndian, &length);
   if err != nil {return nil, err}
 
   pack := make([]byte, length);
