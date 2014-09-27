@@ -1,4 +1,4 @@
-#define MAX_ALLOWED_WRITES 20
+#define MAX_ALLOWED_WRITES 5
 #define MEM_VABASE 120
 
 void setupStorage() {
