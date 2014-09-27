@@ -4,3 +4,6 @@
 [submodule "logging"]
   path = libraries/logging
   url = https://github.com/NOX73/Arduino-logging-library.git
+[submodule "libraries/ArduinoJson"]
+	path = libraries/ArduinoJson
+	url = https://github.com/bblanchon/ArduinoJson.git
