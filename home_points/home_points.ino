@@ -22,8 +22,7 @@ EEPROMVar<int> eeprom_point_num(DEFAULT_POINT_NUM);
 
 RF24 radio(CE_PIN, CSN_PIN);
 
-typedef void(*FunctionPointer)();
-FunctionPointer mainLoops[MAIN_LOOPS_COUNT];
+//typedef void(*FunctionPointer)(); FunctionPointer mainLoops[MAIN_LOOPS_COUNT];
 
 #define IS_ROUTER 1
 
@@ -37,19 +36,15 @@ FunctionPointer mainLoops[MAIN_LOOPS_COUNT];
   int state = POINT_INIT_STATE;
 #endif
 
+#define MESSAGE_INFO 1
+#define MESSAGE_RESP 2
+
 void setup() {
   Serial.begin(SERIAL_BAUD);
   setupStorage();
   setupRadio();
-  setupMainLoops();
 }
 
 void loop() {
-  FunctionPointer fp = mainLoops[getMainLoopState()];
-  (*fp)();
+  switch_loop(state);
 }
-
-int getMainLoopState() {
-  return state;
-}
-

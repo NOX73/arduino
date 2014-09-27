@@ -5,6 +5,8 @@
 const uint64_t base_out_address = 0x0000000000LL;
 const uint64_t base_in_address = 0x000000F000LL;
 
+const uint64_t event_address = 0xF000000000LL;
+
 void setupRadio() {
   eeprom_point_num.restore();
 
@@ -20,3 +22,12 @@ uint64_t getOutAddress() {
 uint64_t getInAddress() {
   return base_in_address | (int(eeprom_point_num));
 }
+
+uint64_t getEventAddress() {
+  return event_address;
+}
+
+void radio_listenEvents() {
+  radio.openReadingPipe(1, getEventAddress());
+}
+

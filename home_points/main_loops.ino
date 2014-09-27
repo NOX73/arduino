@@ -1,7 +1,9 @@
 
-void setupMainLoops() {
-  mainLoops[ROUTER_SETUP_STATE] = &router_setupLoop;
-  mainLoops[ROUTER_WORK_STATE] = &router_workLoop;
-  mainLoops[POINT_INIT_STATE] = &point_initLoop;
+void switch_loop(int state) {
+  switch(state) {
+    case ROUTER_SETUP_STATE: router_setupLoop(); break;
+    case ROUTER_WORK_STATE: router_workLoop(); break;
+    case POINT_INIT_STATE: point_initLoop(); break;
+  }
 }
 
