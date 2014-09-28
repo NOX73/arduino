@@ -5,9 +5,7 @@ import (
 	"sync"
 )
 
-type Command interface{}
-
-type command struct {
+type Command struct {
 	ID   int `json:"id"`
 	Type int `json:"t"`
 }
@@ -30,7 +28,7 @@ func nextCID() int {
 }
 
 func NewCommand(cType int) Command {
-	return command{nextCID(), cType}
+	return Command{nextCID(), cType}
 }
 
 func NewCommandInfo() Command {

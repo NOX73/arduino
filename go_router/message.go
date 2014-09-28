@@ -30,7 +30,8 @@ type MessageInfo struct {
 }
 
 type RadioInfo struct {
-	Level int `json:"lvl"`
+	Level   int  `json:"lvl"`
+	TestRPD bool `json:"rpd"`
 }
 
 func (m *Message) unmarshalContent() error {
