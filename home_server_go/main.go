@@ -2,36 +2,20 @@ package main
 
 import (
 	"log"
+	"time"
 
-	router "github.com/NOX73/arduino/go_router"
+	"./home_server"
 )
 
 func main() {
 
-	var err error
-
-	device, err := router.GetDevice()
+	_, err := home_server.NewRouterController()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Println("Device opened.")
+	time.Sleep(60 * time.Second)
 
-	err = device.Write([]byte("{\"id\":4,\"cmd\":1}"))
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for {
-		a, err := device.Read()
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		log.Println(string(a))
-	}
-
+	log.Println("Done.")
 }
