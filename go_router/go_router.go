@@ -25,6 +25,7 @@ type Router interface {
 	Read() ([]byte, error)
 	Write([]byte) error
 	StartStream() (in chan<- Command, out <-chan Message, kill chan<- interface{})
+	GetPath() string
 }
 
 func GetDevice() (Router, error) {

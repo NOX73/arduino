@@ -123,3 +123,7 @@ func (r *router) Setup() error {
 
 	return nil
 }
+
+func (r *router) GetPath() string {
+	return r.Path
+}
