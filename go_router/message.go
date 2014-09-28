@@ -19,6 +19,7 @@ type Message struct {
 	Type       int             `json:"t"`
 	Result     int             `json:"r"`
 	ContentRaw json.RawMessage `json:"c"`
+	Content    Content
 }
 
 type Content interface{}
@@ -32,19 +33,38 @@ type RadioInfo struct {
 	Level int `json:"lvl"`
 }
 
-func (m Message) Content() (Content, error) {
+func (m *Message) unmarshalContent() error {
+	if m.ContentRaw == nil {
+		return nil
+	}
+
+	var err error
+
 	switch m.Type {
 	case MInfo:
 		mi := MessageInfo{}
-		err := json.Unmarshal(m.ContentRaw, &mi)
-		return mi, err
+		err = json.Unmarshal(m.ContentRaw, &mi)
+		m.Content = mi
+	default:
+		err = UndefinedContentType
 	}
 
-	return nil, UndefinedContentType
+	if err == nil {
+		m.ContentRaw = nil
+	}
+
+	return err
 }
 
 func unmarchalMessage(data []byte) (Message, error) {
 	m := Message{}
 	err := json.Unmarshal(data, &m)
+
+	if err != nil {
+		return m, err
+	}
+
+	err = (&m).unmarshalContent()
+
 	return m, err
 }
