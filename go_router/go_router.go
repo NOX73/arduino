@@ -58,7 +58,10 @@ func OpenDevice(path string) (Router, error) {
 		return nil, err
 	}
 
-	r := &router{s}
+	r := &router{
+		Path:   path,
+		serial: s,
+	}
 
 	time.Sleep(waitForDevice * time.Second)
 

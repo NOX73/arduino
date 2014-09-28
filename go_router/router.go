@@ -14,6 +14,7 @@ var (
 )
 
 type router struct {
+	Path   string
 	serial io.ReadWriteCloser
 }
 
