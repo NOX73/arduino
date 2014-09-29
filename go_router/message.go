@@ -25,11 +25,13 @@ type Message struct {
 type Content interface{}
 
 type MessageInfo struct {
+	State      int       `json:"s"`
 	FreeMemory int       `json:"mem"`
 	Radio      RadioInfo `json:"radio"`
 }
 
 type RadioInfo struct {
+	State   int  `json"s"`
 	Level   int  `json:"lvl"`
 	TestRPD bool `json:"rpd"`
 }
