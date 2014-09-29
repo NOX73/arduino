@@ -1,7 +1,9 @@
 package home_server
 
 import (
+	"log"
 	"sync"
+	"time"
 
 	router "github.com/NOX73/arduino/go_router"
 )
@@ -37,7 +39,14 @@ func (m *messageController) Send(message router.Message) {
 		if s.Triggered(message) {
 
 			//TODO: timeout
-			s.Out <- message
+
+			timeout := time.After(timeoutTime * time.Millisecond)
+
+			select {
+			case s.Out <- message:
+			case <-timeout:
+				log.Println("[MessageController] Warning: Timeout to deliver message.")
+			}
 
 			if s.Once {
 				toRemove = append(toRemove, s)
@@ -55,25 +64,25 @@ func (m *messageController) Send(message router.Message) {
 
 func (m *messageController) All() *Subscriber {
 	s := NewSubscriber(nil, false)
-	m.subscribe(s)
+	m.Subscribe(s)
 	return s
 }
 
 func (m *messageController) Once() *Subscriber {
 	s := NewSubscriber(nil, true)
-	m.subscribe(s)
+	m.Subscribe(s)
 	return s
 }
 
 func (m *messageController) Filter(trigger TriggerF) *Subscriber {
 	s := NewSubscriber(trigger, false)
-	m.subscribe(s)
+	m.Subscribe(s)
 	return s
 }
 
 func (m *messageController) FilterOnce(trigger TriggerF) *Subscriber {
 	s := NewSubscriber(trigger, true)
-	m.subscribe(s)
+	m.Subscribe(s)
 	return s
 }
 
@@ -87,8 +96,19 @@ func (m *messageController) Enough(s *Subscriber) {
 	m.unsubscribe(s)
 }
 
-func (m *messageController) unsubscribe(s *Subscriber) {
+func (m *messageController) Subscribe(s *Subscriber) {
 	m.Lock()
+	m.subscribe(s)
+	m.Unlock()
+}
+
+func (m *messageController) Unsubscribe(s *Subscriber) {
+	m.Lock()
+	m.unsubscribe(s)
+	m.Unlock()
+}
+
+func (m *messageController) unsubscribe(s *Subscriber) {
 	subs := m.subscribers
 
 	for i, item := range subs {
@@ -103,11 +123,8 @@ func (m *messageController) unsubscribe(s *Subscriber) {
 		}
 	}
 
-	m.Unlock()
 }
 
 func (m *messageController) subscribe(s *Subscriber) {
-	m.Lock()
 	m.subscribers = append(m.subscribers, s)
-	m.Unlock()
 }

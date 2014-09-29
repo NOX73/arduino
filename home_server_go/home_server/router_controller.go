@@ -1,8 +1,10 @@
 package home_server
 
 import (
+	"errors"
 	"fmt"
 	"log"
+	"reflect"
 	"time"
 
 	router "github.com/NOX73/arduino/go_router"
@@ -10,6 +12,11 @@ import (
 
 const (
 	infoUpdateDuration = 10
+	timeoutTime        = 1000
+)
+
+var (
+	timeoutError = errors.New("[RouterController] Error: Timeout error")
 )
 
 type RouterController interface {
@@ -63,19 +70,32 @@ func (c *routerController) IsConnected() bool {
 	return c.connected
 }
 
-//TODO: timeout
 func (c *routerController) SendCommand(cmd router.Command) error {
-	c.deviceIn <- cmd
+	timeout := time.After(timeoutTime * time.Millisecond)
+
+	select {
+	case c.deviceIn <- cmd:
+	case <-timeout:
+		return timeoutError
+	}
+
 	return nil
 }
 
-//TODO: timeout
 func (c *routerController) Request(cmd router.Command) (response router.Message, err error) {
 	err = c.SendCommand(cmd)
 	if err != nil {
 		return response, err
 	}
-	response = <-c.MessageController.ByID(cmd.ID).Out
+
+	timeout := time.After(timeoutTime * time.Millisecond)
+
+	select {
+	case response = <-c.MessageController.ByID(cmd.ID).Out:
+	case <-timeout:
+		return response, timeoutError
+	}
+
 	return response, nil
 }
 
@@ -92,9 +112,10 @@ func (c *routerController) setup() {
 
 	c.connected = true
 
-	log.Println("[ROUTER_CONTROLLER] Opened divice on: ", c.Device.GetPath())
+	log.Println("[RouterController] Opened divice on: ", c.Device.GetPath())
 
 	go c.updateInfo()
+	go c.listenToEvents()
 }
 
 func (c *routerController) loop() {
@@ -118,17 +139,32 @@ func (c *routerController) updateInfo() {
 
 	if err != nil {
 		c.Error = err
+		log.Println("[RouterController] updateInfo ")
 		return
 	}
 
 	info, ok := resp.Content.(router.MessageInfo)
 
 	if !ok {
-		c.Error = err
+		log.Println("[RouterController] updateInfo type cast error. Real type is ", reflect.TypeOf(resp.Content))
 		return
 	}
 
-	log.Println("[ROUTER_CONTROLLER] New Router Info: ", fmt.Sprintf("%+v", info))
+	log.Println("[RouterController] New Router Info: ", fmt.Sprintf("%+v", info))
 
 	c.Info = info
+}
+
+func (c *routerController) listenToEvents() error {
+	cmd := router.NewCommandListenEvents()
+	err := c.SendCommand(cmd)
+
+	if err != nil {
+		log.Println("[RouterController] Error on listenToEvents: ", err)
+		return err
+	}
+
+	log.Println("[RouterController] Started listen events")
+
+	return nil
 }
