@@ -6,12 +6,15 @@ using namespace StreamPack;
 
 void router_getInfo(Parser::JsonObject root) {
 
-  Generator::JsonObject<1> radioObject;
+  Generator::JsonObject<3> radioObject;
   radioObject["lvl"] = radio.getPALevel();
+  radioObject["rpd"] = radio.testRPD();
+  radioObject["s"] = radioState;
 
-  Generator::JsonObject<2> contentObject;
+  Generator::JsonObject<3> contentObject;
   contentObject["radio"] = radioObject;
   contentObject["mem"] = freeMemory();
+  contentObject["s"] = state;
 
   Generator::JsonObject<3> object;
   object["c"] = contentObject;
@@ -23,6 +26,8 @@ void router_getInfo(Parser::JsonObject root) {
 
 void router_listenEvents(Parser::JsonObject root) {
   radio_listenEvents();
+  
+  radioState = RADIO_STATE_EVENTS;
 
   Generator::JsonObject<3> object;
   object["id"] = long(root["id"]);
@@ -32,8 +37,20 @@ void router_listenEvents(Parser::JsonObject root) {
   printJsonObject(object);
 }
 
+void router_pointEvent(uint32_t point_number) {
+  Generator::JsonObject<1> contentObject;
+  contentObject["from"] = int(point_number);
+
+  Generator::JsonObject<3> object;
+  object["id"] = 0;
+  object["t"] = MESSAGE_POINT_EVENT;
+  object["c"] = contentObject;
+
+  printJsonObject(object);
+}
+
 void evalRouterCommand(Parser::JsonObject root) {
-  long command = root["cmd"];
+  long command = root["t"];
 
   switch (command) {
     case ROUTER_COMMAND_INFO: router_getInfo(root); break;

@@ -28,6 +28,11 @@ uint64_t getEventAddress() {
 }
 
 void radio_listenEvents() {
+  radio.stopListening();
   radio.openReadingPipe(1, getEventAddress());
+  radio.startListening();
 }
 
+uint32_t radio_ReadEvent() {
+  return StreamPack::readLengthFrom(&radioStream);
+}

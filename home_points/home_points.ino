@@ -9,6 +9,7 @@
 #include <JsonGenerator.h>
 #include <MemoryFree.h>
 #include <StreamPack.h>
+#include <RadioStream.h>
 
 #define DEFAULT_POINT_NUM 0
 #define CE_PIN 9
@@ -31,13 +32,22 @@ RF24 radio(CE_PIN, CSN_PIN);
 #define POINT_INIT_STATE    2
 
 #ifdef IS_ROUTER
-  int state = ROUTER_SETUP_STATE;
+int state = ROUTER_SETUP_STATE;
 #else
-  int state = POINT_INIT_STATE;
+int state = POINT_INIT_STATE;
 #endif
 
-#define MESSAGE_INFO 1
-#define MESSAGE_RESP 2
+
+#define RADIO_STATE_DISABLE 0
+#define RADIO_STATE_EVENTS  1
+
+RadioStream radioStream(&radio);
+int radioState = RADIO_STATE_DISABLE;
+
+#define MESSAGE_INFO          1
+#define MESSAGE_RESP          2
+#define MESSAGE_POINT_EVENT   3
+
 
 void setup() {
   Serial.begin(SERIAL_BAUD);

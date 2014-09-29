@@ -16,6 +16,26 @@ void router_setupLoop() {
 }
 
 void router_workLoop() {
+  router_checkSerial();
+  router_radioLoop();
+}
+
+void router_radioLoop() {
+  switch (radioState) {
+    case RADIO_STATE_EVENTS:
+      router_listenEvents();
+      break;
+  }
+}
+
+void router_listenEvents() {
+  if(radioStream.available() == 4) {
+    uint32_t point_number = radio_ReadEvent();
+    router_pointEvent(point_number);
+  }
+}
+
+void router_checkSerial() {
   if (Serial.available() > 4) {
     uint32_t length = serialReadLength();
 
