@@ -17,6 +17,8 @@ namespace StreamPack {
   uint32_t serialReadLength();
   char* serialReadPack();
 
+  uint32_t readLengthFrom(Stream*);
+
   template<typename T>
   void printJsonObject(T object) {
     char buff[STREAM_PACK_BUFFER];

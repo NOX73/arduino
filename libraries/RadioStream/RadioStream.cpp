@@ -36,8 +36,14 @@ int RadioStream::available() {
 }
 
 int RadioStream::recievedBuffer() {
-  int i=0;
-  while(buffer[i] != 0 && i < target->getPayloadSize()) i++;
+  // if we want to send value which started from 0, we send 0xxxx..  and amount of bytes to read at the end
+  char last = buffer[sizeof(buffer)-1];
+  if(buffer[0] == 0 && last != 0) {
+    return last;
+  }
+  int i = 0;
+  uint8_t length = target->getPayloadSize();
+  while(buffer[i] != 0 && i < length) i++;
   return i;
 }
 
@@ -67,6 +73,7 @@ void RadioStream::flush() {
 
   if(ok) { reset_wbuffer(); }
 }
+
 int RadioStream::peek() { return 0; }
 
 size_t RadioStream::write(uint8_t val){

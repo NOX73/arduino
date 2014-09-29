@@ -30,6 +30,16 @@ namespace StreamPack {
     }
   }
 
+  uint32_t readLengthFrom(Stream *s) {
+    Stream *b = stream;
+    stream = s;
+
+    uint32_t length = serialReadLength();
+
+    stream = b;
+    return length;
+  }
+
   uint32_t serialReadLength() {
     char length_bytes[4] = { 0, 0, 0, 0 };
 
