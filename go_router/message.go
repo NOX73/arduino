@@ -31,7 +31,7 @@ type MessageInfo struct {
 }
 
 type RadioInfo struct {
-	State   int  `json"s"`
+	State   int  `json:"s"`
 	Level   int  `json:"lvl"`
 	TestRPD bool `json:"rpd"`
 }
