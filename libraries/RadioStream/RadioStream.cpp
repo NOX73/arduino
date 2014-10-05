@@ -66,6 +66,11 @@ int RadioStream::read() {
 void RadioStream::flush() {
   if(isBufferFree()){return;}
 
+  if(isFromZeroMessage()) {
+    wbuffer[sizeof(wbuffer)-1] = wbuffer_pointer;
+    wbuffer_pointer = sizeof(wbuffer)-1;
+  }
+
   beginWrite();
   bool ok = target->write( wbuffer , wbuffer_pointer );
   delay(50);
@@ -76,8 +81,17 @@ void RadioStream::flush() {
 
 int RadioStream::peek() { return 0; }
 
+bool RadioStream::isFromZeroMessage () {
+  return  wbuffer_pointer > 0 && wbuffer[0] == 0;
+}
+
+bool RadioStream::shouldFlushMessageFromZero() {
+  int last_idx = sizeof(wbuffer) - 1;
+  return wbuffer_pointer + 1 == last_idx && isFromZeroMessage();
+}
+
 size_t RadioStream::write(uint8_t val){
-  if(wbuffer_pointer >= sizeof(wbuffer)){
+  if(wbuffer_pointer >= sizeof(wbuffer) || shouldFlushMessageFromZero()){
     flush();
 
     if(isBufferFree()){

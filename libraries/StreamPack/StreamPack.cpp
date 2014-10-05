@@ -6,41 +6,32 @@
 namespace StreamPack {
   using namespace ArduinoJson;
 
-  Stream *stream = &Serial;
+  Stream *serial;
+  Stream *radio;
 
-  void serialWriteLength(uint32_t length) {
+  void writeLength(Stream *stream, uint32_t length) {
     char length_bytes[] = { length & 0xFF, (length >> 8) & 0xFF, (length >> 16) & 0xFF, (length >> 24) & 0xFF };
     stream->write(length_bytes, 4);
   }
 
-  void serialWritePack(char pack[]) {
+  void writePack(Stream *stream, char pack[]) {
     serialWriteLength(sizeof(pack) - 1);
     stream->write(pack);
   }
 
-  void serialWritePack(char pack[], uint32_t length) {
-    serialWriteLength(length);
+  void writePack(Stream *stream, char pack[], uint32_t length) {
+    writeLength(stream, length);
     stream->write(pack, length);
   }
 
-  void serialReadPack(char *b, uint32_t length) {
+  void readPack(Stream *stream, char *b, uint32_t length) {
     for(uint32_t i = 0; i < length; i++ ){
       while(stream->available() == 0) delay(10);
       b[i] = stream->read();
     }
   }
 
-  uint32_t readLengthFrom(Stream *s) {
-    Stream *b = stream;
-    stream = s;
-
-    uint32_t length = serialReadLength();
-
-    stream = b;
-    return length;
-  }
-
-  uint32_t serialReadLength() {
+  uint32_t readLength(Stream *stream) {
     char length_bytes[4] = { 0, 0, 0, 0 };
 
     stream->readBytes(length_bytes, 4);
@@ -49,11 +40,59 @@ namespace StreamPack {
     return length;
   }
 
-  char* serialReadPack() {
-    uint32_t length = serialReadLength();
-    char *b = new char[length];
-    serialReadPack(b, length);
-    return b;
+
+
+
+  void serialWriteLength(uint32_t length){
+    writeLength(serial, length);
+  }
+
+  void serialWritePack(char *pack) {
+    writePack(serial, pack);
+  }
+
+  void serialWritePack(char *pack, uint32_t length) {
+    writePack(serial, pack, length);
+  }
+
+  void serialReadPack(char *pack, uint32_t length) {
+    readPack(serial, pack, length);
+  }
+
+  uint32_t serialReadLength() {
+    return readLength(serial);
+  }
+
+
+
+  void radioWriteLength(uint32_t length){
+    writeLength(radio, length);
+  }
+
+  void radioWritePack(char *pack) {
+    writePack(radio, pack);
+  }
+
+  void radioWritePack(char *pack, uint32_t length) {
+    writePack(radio, pack, length);
+  }
+
+  void radioReadPack(char *pack, uint32_t length) {
+    readPack(radio, pack, length);
+  }
+
+  uint32_t radioReadLength() {
+    return readLength(radio);
+  }
+
+  void setup(Stream *s, Stream *r) {
+    serial = s;
+    radio = r;
+  }
+
+  void flush() {
+    serial->flush();
+    radio->flush();
   }
 
 }

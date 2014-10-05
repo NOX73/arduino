@@ -34,5 +34,10 @@ void radio_listenEvents() {
 }
 
 uint32_t radio_ReadEvent() {
-  return StreamPack::readLengthFrom(&radioStream);
+  return StreamPack::radioReadLength();
+}
+
+void radio_sendEventFrom(uint32_t point_num) {
+  StreamPack::radioWriteLength(point_num);
+  StreamPack::flush();
 }

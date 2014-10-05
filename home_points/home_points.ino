@@ -19,7 +19,7 @@
 #define JSON_PARSER_TOKENS 32
 
 EEPROMVar<bool> eeprom_init(false);
-EEPROMVar<int> eeprom_point_num(DEFAULT_POINT_NUM);
+EEPROMVar<uint32_t> eeprom_point_num(DEFAULT_POINT_NUM);
 
 RF24 radio(CE_PIN, CSN_PIN);
 
@@ -53,6 +53,7 @@ void setup() {
   Serial.begin(SERIAL_BAUD);
   setupStorage();
   setupRadio();
+  StreamPack::setup(&Serial, &radioStream);
 }
 
 void loop() {

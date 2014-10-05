@@ -1,5 +1,4 @@
 using namespace ArduinoJson;
-using namespace StreamPack;
 
 #define ROUTER_COMMAND_INFO 1
 #define ROUTER_COMMAND_LISTEN_EVENTS 2
@@ -21,7 +20,7 @@ void router_getInfo(Parser::JsonObject root) {
   object["id"] = long(root["id"]);
   object["t"] = MESSAGE_INFO;
 
-  printJsonObject(object);
+  StreamPack::serialJsonObject(object);
 }
 
 void router_listenEvents(Parser::JsonObject root) {
@@ -34,7 +33,7 @@ void router_listenEvents(Parser::JsonObject root) {
   object["t"] = MESSAGE_RESP;
   object["r"] = true;
 
-  printJsonObject(object);
+  StreamPack::serialJsonObject(object);
 }
 
 void router_pointEvent(uint32_t point_number) {
@@ -46,7 +45,7 @@ void router_pointEvent(uint32_t point_number) {
   object["t"] = MESSAGE_POINT_EVENT;
   object["c"] = contentObject;
 
-  printJsonObject(object);
+  StreamPack::serialJsonObject(object);
 }
 
 void evalRouterCommand(Parser::JsonObject root) {
@@ -59,16 +58,13 @@ void evalRouterCommand(Parser::JsonObject root) {
 
 }
 
-void sendRouterError(char *err) {
-  Generator::JsonObject<1> object;
-  object["err"] = err;
-
-  printJsonObject(object);
+void sendRouterError(char *str) {
+  sendRouterDebug(str);
 }
 
 void sendRouterDebug(char *str) {
   Generator::JsonObject<1> object;
-  object["debug"] = str;
+  object["d"] = str;
 
-  printJsonObject(object);
+  StreamPack::serialJsonObject(object);
 }

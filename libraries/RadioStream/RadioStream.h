@@ -27,6 +27,9 @@ class RadioStream : public Stream
     void beginWrite();
     void endWrite();
 
+    bool isFromZeroMessage();
+    bool shouldFlushMessageFromZero();
+
   public: 
 
     RadioStream(RF24 *radio);
