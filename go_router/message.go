@@ -6,7 +6,8 @@ import (
 )
 
 const (
-	MInfo = iota + 1
+	MRaw = iota
+	MInfo
 	MResp
 )
 
@@ -45,6 +46,8 @@ func (m *Message) unmarshalContent() error {
 	var err error
 
 	switch m.Type {
+	case MRaw:
+		m.Content = m.ContentRaw
 	case MInfo:
 		mi := MessageInfo{}
 		err = json.Unmarshal(m.ContentRaw, &mi)
