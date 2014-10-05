@@ -18,6 +18,7 @@ type Message struct {
 	ID         int             `json:"id"`
 	Type       int             `json:"t"`
 	Result     int             `json:"r"`
+	Debug      string          `json:"d"`
 	ContentRaw json.RawMessage `json:"c"`
 	Content    Content
 }
