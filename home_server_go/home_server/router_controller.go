@@ -23,8 +23,8 @@ type RouterController interface {
 	GetInfo() router.MessageInfo
 	GetError() error
 	IsConnected() bool
-	SendCommand(router.Command) error
 
+	SendCommand(router.Command) error
 	Request(cmd router.Command) (response router.Message, err error)
 }
 
@@ -116,6 +116,17 @@ func (c *routerController) setup() {
 
 	go c.updateInfo()
 	go c.listenToEvents()
+
+	go c.logAllMessages()
+}
+
+func (c *routerController) logAllMessages() {
+	all := c.MessageController.All().Out
+
+	for {
+		message := <-all
+		log.Println("[RouterController] New Message: ", fmt.Sprintf("%+v", message))
+	}
 }
 
 func (c *routerController) loop() {
@@ -164,7 +175,7 @@ func (c *routerController) listenToEvents() error {
 		return err
 	}
 
-	log.Println("[RouterController] Started listen events")
+	log.Println("[RouterController] Started listen events.")
 
 	return nil
 }

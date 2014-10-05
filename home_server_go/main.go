@@ -15,7 +15,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	time.Sleep(60 * time.Second)
+	time.Sleep(600 * time.Second)
 
 	log.Println("Done.")
 }
