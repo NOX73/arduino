@@ -5,7 +5,8 @@ import (
 	"sync"
 	"time"
 
-	router "github.com/NOX73/arduino/go_router"
+	//router "github.com/NOX73/arduino/go_router"
+	router "../../go_router"
 )
 
 type MessageController interface {

@@ -1,6 +1,9 @@
 package home_server
 
-import router "github.com/NOX73/arduino/go_router"
+import (
+	//router "github.com/NOX73/arduino/go_router"
+	router "../../go_router"
+)
 
 type TriggerF func(router.Message) bool
 

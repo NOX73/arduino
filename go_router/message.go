@@ -9,6 +9,8 @@ const (
 	MRaw = iota
 	MInfo
 	MResp
+	MEvent
+	MSetup
 )
 
 var (
@@ -26,15 +28,17 @@ type Message struct {
 type Content interface{}
 
 type MessageInfo struct {
-	State      int       `json:"s"`
-	FreeMemory int       `json:"mem"`
-	Radio      RadioInfo `json:"radio"`
+	State      int `json:"s"`
+	FreeMemory int `json:"mem"`
+	Radio      struct {
+		State   int  `json:"s"`
+		Level   int  `json:"lvl"`
+		TestRPD bool `json:"rpd"`
+	} `json:"radio"`
 }
 
-type RadioInfo struct {
-	State   int  `json:"s"`
-	Level   int  `json:"lvl"`
-	TestRPD bool `json:"rpd"`
+type MessageEvent struct {
+	From int `json:"from"`
 }
 
 func (m *Message) unmarshalContent() error {
@@ -45,10 +49,15 @@ func (m *Message) unmarshalContent() error {
 	var err error
 
 	switch m.Type {
+	case MSetup:
 	case MRaw:
 		m.Content = m.ContentRaw
 	case MInfo:
 		mi := MessageInfo{}
+		err = json.Unmarshal(m.ContentRaw, &mi)
+		m.Content = mi
+	case MEvent:
+		mi := MessageEvent{}
 		err = json.Unmarshal(m.ContentRaw, &mi)
 		m.Content = mi
 	default:

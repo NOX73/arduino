@@ -32,7 +32,8 @@ func (r *router) StartStream() (chan<- Command, <-chan Message, chan<- interface
 
 			msg, err := unmarchalMessage(data)
 			if err != nil {
-				log.Fatal(err)
+				log.Println("[router] ", err, string(data))
+				continue
 			}
 
 			out <- msg

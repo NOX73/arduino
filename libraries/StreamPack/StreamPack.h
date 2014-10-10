@@ -14,6 +14,9 @@ namespace StreamPack {
 
   using namespace ArduinoJson;
 
+  void setup(Stream*, Stream*);
+  void flush();
+
   void writeLength(Stream*, uint32_t);
   void writePack(Stream*, char*);
   void writePack(Stream*, char*, uint32_t);
@@ -49,8 +52,21 @@ namespace StreamPack {
     printJsonObject(radio, object);
   }
 
-  void setup(Stream*, Stream*);
-  void flush();
+  template<typename T>
+  char* stringJsonObject(T object) {
+    char buff[STREAM_PACK_BUFFER];
+    uint32_t length = object.printTo(buff, sizeof(buff));
+
+    char *result = new char[length+1];
+
+    for(int i=0; i<length; i++) {
+      result[i] = buff[i];
+    }
+
+    result[length+1] = 0;
+
+    return result;
+  }
 
 }
 #endif

@@ -1,3 +1,6 @@
+#ifndef EEPROMex_h
+#define EEPROMex_h
+
 #include <EEPROMex.h>
 
 /*
@@ -81,3 +84,5 @@ template<typename T> class EEPROMVar
 	  T var;
 	  int address;
 };
+
+#endif
