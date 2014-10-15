@@ -39,6 +39,10 @@ namespace RadioPack {
     radio->startListening();
   }
 
+   uint64_t events_addr() {
+    return EVENT_ADDRESS;
+  }
+
   void listen_point(int point_num) {
     radio->stopListening();
     radio->openReadingPipe(1, out_address(point_num));

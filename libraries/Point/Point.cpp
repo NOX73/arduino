@@ -2,6 +2,15 @@
 
 namespace Point {
 
+  Point::Point() {
+    init();
+  }
+
+  void Point::init() {
+    state = POINT_SETUP_STATE;
+    outgoing_pointer = 0;
+  }
+
   void Point::loop() {
     switch(state) {
       case POINT_SETUP_STATE: setup_loop(); break;
@@ -9,23 +18,28 @@ namespace Point {
   }
 
   void Point::setup_loop() {
-    uint32_t num = StoragePack::point_num;
     unsigned long last_event = millis();
     unsigned long last_setup = millis();
 
     while(state == POINT_INIT_STATE) {
 
       if(outgoing_pointer == 0 && last_setup - millis() > POINT_SEND_SETUP_EVERY) {
-        //Handlers::send_setup_request();
+        send_setup_request();
         last_setup = millis();
       }
 
       if(last_event - millis() > POINT_SEND_EVENT_EVERY) {
-        //Handlers::send_event_request();
+        check_event_request();
         last_event = millis();
       }
 
       check_radio();
+    }
+  }
+
+  void Point::check_event_request() {
+    if(outgoing_pointer > 0) {
+        send_event_request();
     }
   }
 
@@ -59,5 +73,22 @@ namespace Point {
     }
   }
 
+  void Point::send_event_request() {
+    uint32_t num = StoragePack::point_num;
+    StreamPack::writeEventFrom(num);
+  }
+
+  void Point::send_setup_request() {
+    Generator::JsonObject<1> object;
+    object["t"] = MESSAGE_POINT_SETUP;
+
+    char *out = StreamPack::stringJsonObject(object);
+    outgoing_push(out);
+  }
+
+  void Point::outgoing_push(char *out) {
+    outgoing[outgoing_pointer] = out;
+    outgoing_pointer ++;
+  }
 
 }

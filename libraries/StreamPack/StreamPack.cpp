@@ -1,13 +1,10 @@
-#include <JsonParser.h>
-#include <JsonGenerator.h>
 #include <StreamPack.h>
-#include <Arduino.h>
 
 namespace StreamPack {
   using namespace ArduinoJson;
 
   Stream *serial;
-  Stream *radio;
+  RadioStream *radio;
 
   void writeLength(Stream *stream, uint32_t length) {
     char length_bytes[] = { length & 0xFF, (length >> 8) & 0xFF, (length >> 16) & 0xFF, (length >> 24) & 0xFF };
@@ -85,13 +82,23 @@ namespace StreamPack {
     return readLength(radio);
   }
 
-  void setup(Stream *s, Stream *r) {
+  void setup(Stream *s, RadioStream *r) {
     serial = s;
     radio = r;
   }
 
   void flush() {
     serial->flush();
+    radio->flush();
+  }
+
+  void writeEventFrom(uint32_t from) {
+    uint64_t addr = RadioPack::events_addr();
+
+    radio->set_addr(addr);
+
+    radioWriteLength(from);
+
     radio->flush();
   }
 

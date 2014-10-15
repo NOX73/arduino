@@ -1,8 +1,11 @@
 #ifndef StreamPack_h
 #define StreamPack_h
 
+#include <RadioPack.h>
+#include <RadioStream.h>
 #include <JsonParser.h>
 #include <JsonGenerator.h>
+#include <Arduino.h>
 #include <Stream.h>
 
 #define STREAM_PACK_BUFFER 256
@@ -10,11 +13,11 @@
 namespace StreamPack {
 
   extern Stream *serial;
-  extern Stream *radio;
+  extern RadioStream *radio;
 
   using namespace ArduinoJson;
 
-  void setup(Stream*, Stream*);
+  void setup(Stream*, RadioStream*);
   void flush();
 
   void writeLength(Stream*, uint32_t);
@@ -34,6 +37,7 @@ namespace StreamPack {
   void radioWritePack(char*, uint32_t);
   void radioReadPack(char*, uint32_t);
   uint32_t radioReadLength();
+  void writeEventFrom(uint32_t);
 
   template<typename T>
   void printJsonObject(Stream *stream, T object) {

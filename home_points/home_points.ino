@@ -48,6 +48,8 @@ void setup() {
   RadioPack::setup(&radio);
   StoragePack::setup();
   StreamPack::setup(&Serial, &radioStream);
+
+  role_setup();
 }
 
 #ifdef IS_ROUTER
@@ -60,6 +62,9 @@ void loop() {
   router.loop();
 }
 
+void role_setup() {
+}
+
 #else
 
 #include <Point.h>
@@ -68,6 +73,9 @@ Point::Point point;
 
 void loop() {
   point.loop();
+}
+
+void role_setup() {
 }
 
 #endif

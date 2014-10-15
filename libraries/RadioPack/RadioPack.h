@@ -17,6 +17,7 @@ namespace RadioPack {
   bool test_rpd();
   bool test_rpd();
   uint32_t read_event();
+  uint64_t events_addr();
 
   int available();
 }
