@@ -10,7 +10,6 @@
 #include <JsonGenerator.h>
 #include <MemoryFree.h>
 #include <Defines.h>
-//#include <StreamPack.h>
 #include <RadioStream.h>
 
 #include <RadioPack.h>
@@ -23,25 +22,10 @@
 #define SERIAL_BAUD 115200
 #define JSON_PARSER_TOKENS 32
 
-//EEPROMVar<bool> eeprom_init(false);
-//EEPROMVar<uint32_t> eeprom_point_num(DEFAULT_POINT_NUM);
-
-//typedef void(*FunctionPointer)(); FunctionPointer mainLoops[MAIN_LOOPS_COUNT];
-
-#define IS_ROUTER 1
-
-//#ifdef IS_ROUTER
-//int state = ROUTER_SETUP_STATE;
-//#else
-//int state = POINT_INIT_STATE;
-//char *outgoing[POINT_OUTGOING_LENGTH];
-//int outgoing_pointer = 0;
-//#endif
+//#define IS_ROUTER 1
 
 RF24 radio(CE_PIN, CSN_PIN);
 RadioStream radioStream(&radio);
-
-//int radioState = RADIO_STATE_DISABLE;
 
 void setup() {
   Serial.begin(SERIAL_BAUD);
