@@ -21,19 +21,21 @@ namespace Point {
     unsigned long last_event = millis();
     unsigned long last_setup = millis();
 
-    while(state == POINT_INIT_STATE) {
+    while(state == POINT_SETUP_STATE) {
+      unsigned long now = millis();
 
-      if(outgoing_pointer == 0 && last_setup - millis() > POINT_SEND_SETUP_EVERY) {
+      if(outgoing_pointer == 0 && now - last_setup > POINT_SEND_SETUP_EVERY) {
         send_setup_request();
-        last_setup = millis();
+        last_setup = now;
       }
 
-      if(last_event - millis() > POINT_SEND_EVENT_EVERY) {
+      if(now - last_event > POINT_SEND_EVENT_EVERY) {
         check_event_request();
-        last_event = millis();
+        last_event = now;
       }
 
       check_radio();
+
     }
   }
 

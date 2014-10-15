@@ -10,8 +10,7 @@
 #include <Defines.h>
 #include "PointHandlers/Handlers.h"
 
-#define POINT_SETUP_STATE   0
-#define POINT_INIT_STATE    1
+#define POINT_SETUP_STATE    0
 
 #define POINT_SEND_EVENT_EVERY 5000
 #define POINT_SEND_SETUP_EVERY 10000

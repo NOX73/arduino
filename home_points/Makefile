@@ -1,7 +1,8 @@
 ARDUINO = /Applications/Arduino.app/Contents/MacOS/JavaApplicationStub
 ARDUINO_REMOTE = arduino
 INO = $(shell pwd)/home_points.ino
-SERIAL = /dev/tty.usbserial*
+SERIAL = /dev/tty.usbserial-*
+SERIAL_2 = /dev/tty.usbserial
 SERIAL_REMOTE = $$HOME/dev/tty.remote
 SERIAL_REMOTE_SERVER = /dev/ttyUSB0
 BOARD = arduino:avr:nano
@@ -17,13 +18,18 @@ all: upload screen
 
 upload:
 	$(ARDUINO) --board $(BOARD) --port $(SERIAL) --upload $(INO)
+upload_2:
+	$(ARDUINO) --board $(BOARD) --port $(SERIAL_2) --upload $(INO)
 
 build:
 	$(ARDUINO) --board $(BOARD) --port $(SERIAL) --verify $(INO)
 
 screen:
 	screen $(SERIAL) $(SERIAL_BAUD)
-screen_remote: 
+screen_2:
+	screen $(SERIAL_2) $(SERIAL_BAUD)
+
+screen_remote:
 	make start_remote_tty > /dev/null 2>&1 &
 	sleep 10
 	screen $(SERIAL_REMOTE) $(SERIAL_BAUD)
