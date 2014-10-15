@@ -15,13 +15,14 @@ void RadioStream::reset_buffer() {
   for(int i=0;i<sizeof(buffer);i++){ buffer[i]=0; }
   buffer_pointer = 0;
 }
+
 void RadioStream::reset_wbuffer() {
   for(int i=0;i<sizeof(wbuffer);i++){ wbuffer[i]=0; }
   wbuffer_pointer = 0;
 }
 
 int RadioStream::available() {
-  if(buffer_pointer >= recievedBuffer()){
+  if (buffer_pointer >= recievedBuffer()) {
     int a = target->available();
     if (a) {
       readFromRadio();
@@ -36,15 +37,7 @@ int RadioStream::available() {
 }
 
 int RadioStream::recievedBuffer() {
-  // if we want to send value which started from 0, we send 0xxxx..  and amount of bytes to read at the end
-  char last = buffer[sizeof(buffer)-1];
-  if(buffer[0] == 0 && last != 0) {
-    return last;
-  }
-  int i = 0;
-  uint8_t length = target->getPayloadSize();
-  while(buffer[i] != 0 && i < length) i++;
-  return i;
+  return buffer[0];
 }
 
 void RadioStream::readFromRadio() {
@@ -57,7 +50,7 @@ int RadioStream::read() {
     readFromRadio();
   }
 
-  int res = buffer[buffer_pointer];
+  int res = buffer[buffer_pointer+1];
   buffer_pointer++;
 
   return res;
@@ -66,10 +59,7 @@ int RadioStream::read() {
 void RadioStream::flush() {
   if(isBufferFree()){return;}
 
-  if(isFromZeroMessage()) {
-    wbuffer[sizeof(wbuffer)-1] = wbuffer_pointer;
-    wbuffer_pointer = sizeof(wbuffer)-1;
-  }
+  wbuffer[0] = wbuffer_pointer;
 
   beginWrite();
   bool ok = target->write( wbuffer , wbuffer_pointer );
@@ -81,21 +71,12 @@ void RadioStream::flush() {
 
 int RadioStream::peek() { return 0; }
 
-bool RadioStream::isFromZeroMessage () {
-  return  wbuffer_pointer > 0 && wbuffer[0] == 0;
-}
-
-bool RadioStream::shouldFlushMessageFromZero() {
-  int last_idx = sizeof(wbuffer) - 1;
-  return wbuffer_pointer + 1 == last_idx && isFromZeroMessage();
-}
-
 size_t RadioStream::write(uint8_t val){
-  if(wbuffer_pointer >= sizeof(wbuffer) || shouldFlushMessageFromZero()){
+  if(wbuffer_pointer >= sizeof(wbuffer) - 1){
     flush();
 
     if(isBufferFree()){
-      wbuffer[wbuffer_pointer] = val;
+      wbuffer[wbuffer_pointer+1] = val;
       wbuffer_pointer++;
       return 1;
     } else {
@@ -103,7 +84,7 @@ size_t RadioStream::write(uint8_t val){
     }
 
   } else {
-    wbuffer[wbuffer_pointer] = val;
+    wbuffer[wbuffer_pointer+1] = val;
     wbuffer_pointer++;
     return 1;
   }
@@ -136,3 +117,6 @@ void RadioStream::setAddr(uint64_t val) {
   addr = val;
 }
 
+void RadioStream::set_addr(uint64_t val) {
+  addr = val;
+}

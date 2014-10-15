@@ -1,7 +1,8 @@
 #include <Router.h>
 #include <StreamPack.h>
 #include <RadioPack.h>
-#include "Handlers/Handlers.cpp"
+#include "RouterHandlers/Handlers.cpp"
+#include "Defines.h"
 
 #define JSON_PARSER_TOKENS 32
 
@@ -13,7 +14,10 @@ namespace Router {
     init();
   }
 
-  void Router::init() {}
+  void Router::init() {
+    state = ROUTER_SETUP_STATE;
+    radioState = ROUTER_RADIO_DISABLE;
+  }
 
   void Router::loop() {
     switch(state) {
@@ -23,7 +27,7 @@ namespace Router {
   }
 
   void Router::setup_loop() {
-      if (Serial.available() > 4) {
+      if (Serial.available() > 0) {
         setup();
         state = ROUTER_WORK_STATE;
       }
@@ -43,7 +47,7 @@ namespace Router {
   }
 
   void Router::check_serial() {
-    if (Serial.available() > 4) {
+    if (Serial.available() > 0) {
       uint32_t length = StreamPack::serialReadLength();
 
       char pack[length+1];
@@ -66,10 +70,16 @@ namespace Router {
     long command = root["t"];
 
     switch (command) {
-      case COMMAND_INFO: Handlers::get_info(root); break;
-      case COMMAND_LISTEN_EVENTS: Handlers::listen_events(root); break;
+      case COMMAND_INFO: Handlers::get_info(root, state, radioState); break;
+      case COMMAND_LISTEN_EVENTS: listen_events(root); break;
     }
 
+  }
+
+  void Router::listen_events(Parser::JsonObject root) {
+    radioState = RADIO_STATE_EVENTS;
+    RadioPack::listen_events();
+    Handlers::listen_events(root);
   }
 
   void Router::check_radio() {
@@ -80,11 +90,26 @@ namespace Router {
     }
   }
 
-  void Router::check_events(){
+  void Router::check_events() {
     if(RadioPack::available() > 0) {
-      uint32_t point_number = radio_ReadEvent();
-      Handlers::new_point_event(point_number);
+      Handlers::new_point_event();
     }
+  }
+
+  int Router::get_state() {
+    return state;
+  }
+
+  void Router::set_state( int val ) {
+    int state = val;
+  }
+
+  int Router::get_radioState() {
+    return radioState;
+  }
+
+  void Router::set_radioState( int val ) {
+    int radioState = val;
   }
 
 

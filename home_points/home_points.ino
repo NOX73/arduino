@@ -8,7 +8,8 @@
 
 #include <JsonParser.h>
 #include <JsonGenerator.h>
-//#include <MemoryFree.h>
+#include <MemoryFree.h>
+#include <Defines.h>
 //#include <StreamPack.h>
 #include <RadioStream.h>
 

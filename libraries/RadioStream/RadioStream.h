@@ -4,7 +4,7 @@
 #include "Stream.h"
 #include "RF24.h"
 
-#define RADIO_STREAM_PAYLOAD_SIZE 8
+#define RADIO_STREAM_PAYLOAD_SIZE 16
 
 class RadioStream : public Stream
 {
@@ -27,8 +27,8 @@ class RadioStream : public Stream
     void beginWrite();
     void endWrite();
 
-    bool isFromZeroMessage();
-    bool shouldFlushMessageFromZero();
+    //bool isFromZeroMessage();
+    //bool shouldFlushMessageFromZero();
 
   public: 
 
@@ -42,7 +42,11 @@ class RadioStream : public Stream
     int peek();
     int available();
 
+
+    //DEPRECATED use set_addr
     void setAddr(uint64_t addr);
+
+    void set_addr(uint64_t addr);
 };
 
 #endif

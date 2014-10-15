@@ -15,8 +15,10 @@ namespace RadioPack {
   void listen_events();
   int pa_level();
   bool test_rpd();
+  bool test_rpd();
+  uint32_t read_event();
 
-  void available();
+  int available();
 }
 
 #endif

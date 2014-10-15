@@ -11,4 +11,6 @@
 #define COMMAND_LISTEN_EVENTS 2
 #define COMMAND_SET_POINT_NUM 3
 
+#define JSON_PARSER_TOKENS 32
+
 #endif

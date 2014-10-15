@@ -9,23 +9,23 @@ namespace Point {
   }
 
   void Point::setup_loop() {
-    uint32_t num = StoragePack::point_num();
+    uint32_t num = StoragePack::point_num;
     unsigned long last_event = millis();
     unsigned long last_setup = millis();
 
     while(state == POINT_INIT_STATE) {
 
       if(outgoing_pointer == 0 && last_setup - millis() > POINT_SEND_SETUP_EVERY) {
-        Handlers::send_setup_request();
+        //Handlers::send_setup_request();
         last_setup = millis();
       }
 
       if(last_event - millis() > POINT_SEND_EVENT_EVERY) {
-        Handlers::send_event_request();
+        //Handlers::send_event_request();
         last_event = millis();
       }
 
-      point_radioLoop();
+      check_radio();
     }
   }
 
@@ -48,13 +48,14 @@ namespace Point {
       }
     }
 
+
   }
 
   void Point::route_command(Parser::JsonObject root) {
     long command = root["t"];
 
     switch (command) {
-      case COMMAND_INFO: Handlers::get_info(root); break;
+      //case COMMAND_INFO: Handlers::get_info(root); break;
     }
   }
 

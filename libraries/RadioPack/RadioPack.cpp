@@ -3,9 +3,11 @@
 #include <RF24_config.h>
 #include <RF24.h>
 
+#include <StreamPack.h>
+
 #define RADIO_SET_RETRIES1 15
 #define RADIO_SET_RETRIES2 15
-#define RADIO_PAYLOAD_SIZE 8
+#define RADIO_PAYLOAD_SIZE 16
 
 #define BASE_OUT_ADDRESS  0x0000000000LL
 #define BASE_IN_ADDRESS   0x000000F000LL
@@ -53,6 +55,10 @@ namespace RadioPack {
 
   bool test_rpd() {
     return radio->testRPD();
+  }
+
+  uint32_t read_event() {
+    return StreamPack::radioReadLength();
   }
 
 }
