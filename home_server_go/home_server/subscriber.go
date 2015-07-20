@@ -2,7 +2,7 @@ package home_server
 
 import (
 	//router "github.com/NOX73/arduino/go_router"
-	router "../../go_router"
+	router "../go_router"
 )
 
 type TriggerF func(router.Message) bool
@@ -11,6 +11,7 @@ type Subscriber struct {
 	Out     chan router.Message
 	Trigger TriggerF
 	Once    bool
+	On      bool
 }
 
 func NewSubscriber(trigger TriggerF, once bool) *Subscriber {
@@ -19,6 +20,7 @@ func NewSubscriber(trigger TriggerF, once bool) *Subscriber {
 		Out:     out,
 		Trigger: trigger,
 		Once:    once,
+		On:      true,
 	}
 }
 

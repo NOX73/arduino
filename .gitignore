@@ -2,4 +2,5 @@
 /home_server/.cabal.sandbox.config
 /home_server/cabal.sandbox.config
 /home_server/dist
+.idea
 

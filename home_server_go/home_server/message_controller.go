@@ -6,7 +6,7 @@ import (
 	"time"
 
 	//router "github.com/NOX73/arduino/go_router"
-	router "../../go_router"
+	router "../go_router"
 )
 
 type MessageController interface {
@@ -37,10 +37,13 @@ func (m *messageController) Send(message router.Message) {
 	subs := m.subscribers
 
 	for _, s := range subs {
+
+		if !s.On {
+			toRemove = append(toRemove, s)
+			continue
+		}
+
 		if s.Triggered(message) {
-
-			//TODO: timeout
-
 			timeout := time.After(timeoutTime * time.Millisecond)
 
 			select {

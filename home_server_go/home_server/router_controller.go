@@ -8,12 +8,13 @@ import (
 	"time"
 
 	//router "github.com/NOX73/arduino/go_router"
-	router "../../go_router"
+	router "../go_router"
 )
 
 const (
-	infoUpdateDuration = 10
-	timeoutTime        = 1000
+	infoUpdateDuration   = 10 * time.Second
+	timeoutTime          = 1000 * time.Millisecond
+	commandsChanCapacity = 5
 )
 
 var (
@@ -40,7 +41,9 @@ func NewRouterController() (RouterController, error) {
 		Device:            device,
 		MessageController: NewMessageController(),
 		connected:         false,
+		CommandsChan:      make(chan router.Command, commandsChanCapacity),
 	}
+
 	controller.init()
 
 	return controller, nil
@@ -57,6 +60,8 @@ type routerController struct {
 	deviceOut <-chan router.Message
 
 	MessageController MessageController
+
+	CommandsChan chan router.Command
 }
 
 func (c *routerController) GetInfo() router.MessageInfo {
@@ -72,32 +77,11 @@ func (c *routerController) IsConnected() bool {
 }
 
 func (c *routerController) SendCommand(cmd router.Command) error {
-	timeout := time.After(timeoutTime * time.Millisecond)
-
-	select {
-	case c.deviceIn <- cmd:
-	case <-timeout:
-		return timeoutError
-	}
-
-	return nil
+	return sendCommand(cmd, c.deviceIn, timeoutTime)
 }
 
 func (c *routerController) Request(cmd router.Command) (response router.Message, err error) {
-	err = c.SendCommand(cmd)
-	if err != nil {
-		return response, err
-	}
-
-	timeout := time.After(timeoutTime * time.Millisecond)
-
-	select {
-	case response = <-c.MessageController.ByID(cmd.ID).Out:
-	case <-timeout:
-		return response, timeoutError
-	}
-
-	return response, nil
+	return sendRequest(cmd, c.deviceIn, c.MessageController, timeoutTime)
 }
 
 func (c *routerController) init() {
@@ -116,9 +100,7 @@ func (c *routerController) setup() {
 	log.Println("[RouterController] Opened divice on: ", c.Device.GetPath())
 
 	go c.updateInfo()
-	go c.listenToEvents()
-
-	go c.logAllMessages()
+	go runEventsController(c.CommandsChan, c.MessageController)
 }
 
 func (c *routerController) logAllMessages() {
@@ -132,10 +114,15 @@ func (c *routerController) logAllMessages() {
 
 func (c *routerController) loop() {
 
-	updateInfoTicker := time.Tick(infoUpdateDuration * time.Second)
+	updateInfoTicker := time.Tick(infoUpdateDuration)
 
 	for {
 		select {
+		case command := <-c.CommandsChan:
+			err := c.SendCommand(command)
+			if err != nil {
+				log.Println("[RouterController] Error on SendCommand: ", err)
+			}
 		case <-updateInfoTicker:
 			go c.updateInfo()
 		case m := <-c.deviceOut:
@@ -165,18 +152,4 @@ func (c *routerController) updateInfo() {
 	log.Println("[RouterController] New Router Info: ", fmt.Sprintf("%+v", info))
 
 	c.Info = info
-}
-
-func (c *routerController) listenToEvents() error {
-	cmd := router.NewCommandListenEvents()
-	err := c.SendCommand(cmd)
-
-	if err != nil {
-		log.Println("[RouterController] Error on listenToEvents: ", err)
-		return err
-	}
-
-	log.Println("[RouterController] Started listen events.")
-
-	return nil
 }
